@@ -148,6 +148,13 @@ def ImportRowInTempTable(row):
 	)  	
 )
 
+def importDemographieLA(row): 
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE Demographie_LA : "+ row["Year"])  	
+	if (debug): print(row)
+	query = "INSERT INTO Demographie_LA (year, population) VALUES (%s, %s) " % (row["Year"],row['Population'])
+	print("[INFO] - " + query)
+	cursor.execute(query)
+
 def importFullMoonData(row):
 	if (verbose) : print ("[INFO] - Inserting import data into TABLE FullMoon : "+ row["full_moon_date"])  	
 	if (debug): print(row)
@@ -166,6 +173,14 @@ def initializeFullMoonTable():
 	) ENGINE=InnoDB ;	
 	""")
 
+def initializeDemographieLA():
+	if (verbose) : print ("[INFO] - Creating TABLE demographie_LA")  
+	cursor.execute("""
+	CREATE TABLE IF NOT EXISTS demographie_LA (
+		year varchar(4),
+		population int(10)
+	) ENGINE=InnoDB ;	
+	""")
 
 def initializeNormalizedTable():
 	if (verbose) : print ("[INFO] - Creating TABLE area ")
@@ -420,6 +435,7 @@ initializeTableImport()
 # ---- create normalized tables
 initializeNormalizedTable()
 initializeFullMoonTable()
+initializeDemographieLA()
 
 # ---- commit Changes into DataBase
 conn.commit()
@@ -471,4 +487,12 @@ with open(csvLink) as csvLinkRead :
 	reader = csv.DictReader(csvLinkRead, delimiter = ',')
 	for row in reader:
 		importFullMoonData(row)
+conn.commit()
+
+# ---- fill Full Moon data from full_moon.csv
+csvLink = '../source/demo_LA.csv'
+with open(csvLink) as csvLinkRead :
+	reader = csv.DictReader(csvLinkRead, delimiter = ',')
+	for row in reader:
+		importDemographieLA(row)
 conn.commit()
