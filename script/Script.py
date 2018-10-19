@@ -11,6 +11,7 @@ defaultPassword = "root"
 database = "db_dataCrime"
 table_import_temp = "t_crime_import"
 
+verbose = True
 debug = False
 # -------- FUNCTIONS WHICH BE EXECUTED BELOW ------------------
 
@@ -69,7 +70,7 @@ def initializeTableImport():
 	""")
 		
 def ImportRowInTempTable(row): 
-	print ("[INFO] - Inserting Or Updating Raw into TABLE t_crime_import : "+ row["DR Number"])  	
+	if (verbose) :print ("[INFO] - Inserting Or Updating Raw into TABLE t_crime_import : "+ row["DR Number"])  	
 	if (debug): print(row)
 	
 	victim_age = 0 
@@ -110,7 +111,7 @@ def ImportRowInTempTable(row):
 		Cross_Street,
 		Location
 		)  
-	  VALUES (%s, %s, %s, %s, %s,
+	  VALUES (%s, STR_TO_DATE(%s, '%m/%d/%Y'), STR_TO_DATE(%s, '%m/%d/%Y'), %s, %s,
 		    %s, %s, %s, %s, %s,
 		    %s, %s, %s, %s, %s, 
 		    %s, %s, %s, %s, %s,
@@ -145,6 +146,7 @@ def ImportRowInTempTable(row):
 		row['Location']     
 	)  	
 )
+
 
 def initializeNormalizedTable():
 # 	print ("[INFO] - Creating TABLE crime, area, weapon_type, crime_type, premise_type, modus_Operandi_type, status_type and descent_typeDescend_type ("[INFO] - Creating TABLE crime, area, weapon_type, crime_type, premise_type, modus_Operandi_type, status_type and descent_type ")
@@ -241,9 +243,9 @@ def initializeNormalizedTable():
 
 	
 def importMoCodes(row): 
-	print ("[INFO] - Importing Mo_Codes : "+ row['id_Modus_Operandi'])
+	if (verbose) : print ("[INFO] - Importing Mo_Codes : "+ row['id_Modus_Operandi'])
 	if (debug) : print (row)
-	
+
 	id_Mo = row['id_Modus_Operandi']
 	Desc_Mo = row['modus_Operandi_Description']
 
@@ -253,10 +255,9 @@ def importMoCodes(row):
 	cursor.execute(query)
 
 def importDescent(row): 
-	print (row)
-	print ("[INFO] - Importing Descent Value : "+ row['Descent_Description'])
+	if (verbose) : print ("[INFO] - Importing Descent Value : "+ row['Descent_Description'])
 	if (debug) : print (row)
-	
+
 	id_Desc = row['Descent_Code']
 	desc_Desc = row['Descent_Description']
 
@@ -289,8 +290,18 @@ def extractArea() :
 				  FROM t_crime_import;
 			""")  
 
-def importDeclaration() : 
-	print ("[INFO] - Normalise declaration from t_vigne_import ")	
+def extractCrime() :
+	print ("[INFO] - Extracting Crime_type from t_crime ")
+	print ("[INFO] - Extracting Crime_type from t_crime ")
+	
+	cursor.execute("""
+			  INSERT INTO crime_type(id_Crime,crime_Code_Description) 
+			  SELECT Distinct Crime_Code,Crime_Code_Description
+				  FROM t_crime_import;
+			""")  		
+
+def importCrimeFact() : 
+	print ("[INFO] - Normalise declaration from t_crime_import ")	
 	cursor.execute("""
 			  INSERT INTO crime (
 							id_crime,
@@ -389,7 +400,7 @@ conn.commit()
 
 # ---- Read Cleared data imported from US Open Data
 #filename = '../source/Crime_Data_from_2010_to_Present.csv'
-filename = '../source/CrimeDataLight.csv'
+filename = '../source/CrimeDataLight2.csv'
 with open(filename) as csvfile:
 
 # ---- Read each line of csv file
@@ -404,7 +415,7 @@ conn.commit()
 extractArea()
 extractWeapon()
 extractPremise()
-
+extractCrime()
 conn.commit()
 
 # ---- fill Mo Codes data from mo_code.csv
@@ -422,4 +433,7 @@ with open(csvLink) as csvLinkRead :
 	reader = csv.DictReader(csvLinkRead, delimiter = ',')
 	for row in reader: 
 		importDescent(row)
+conn.commit()
+
+importCrimeFact()
 conn.commit()
