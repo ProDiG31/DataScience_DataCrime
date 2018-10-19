@@ -31,7 +31,7 @@ def clearDb():
 	cursor.execute("DROP TABLE IF EXISTS weapon_type;") 
 	cursor.execute("DROP TABLE IF EXISTS crime_type;") 
 	cursor.execute("DROP TABLE IF EXISTS premise_type;") 
-	cursor.execute("DROP TABLE IF EXISTS modus_Operandi_type;") 
+	cursor.execute("DROP TABLE IF EXISTS modus_operandi_type;") 
 	cursor.execute("DROP TABLE IF EXISTS status_type;") 
 	cursor.execute("DROP TABLE IF EXISTS descent_type;") 
 	cursor.execute("DROP TABLE IF EXISTS fullMoon;") 
