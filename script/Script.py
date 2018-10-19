@@ -154,7 +154,7 @@ def importDemographieLA(row):
 	if (verbose) : print ("[INFO] - Inserting import data into TABLE demographie_LA : "+ row["Year"])  	
 	if (debug): print(row)
 	query = "INSERT INTO demographie_LA (year, population) VALUES (%s, %s) " % (row["Year"],row['Population'])
-	print("[INFO] - " + query)
+	if (debug):print("[INFO] - " + query)
 	cursor.execute(query)
 
 def importFullMoonData(row):
@@ -166,10 +166,19 @@ def importFullMoonData(row):
 	cursor.execute(query)
 
 def importUnemployementRate(row):
-	if (verbose) : print ("[INFO] - Inserting import data into TABLE unemployement_LA : "+ row["month"])  	
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE unemployement_LA : "+ row["date"])  	
 	if (debug): print(row)
-	
-	query = "INSERT INTO unemployement_LA (year,month,unemployement_rate) VALUES (%s,'%s',%s)" % (row['year'], row['month'], float(row['unemployement_rate'][:-1])) 
+
+	datepatern = '%Y-%m-%d'
+	query = "INSERT INTO unemployement_LA (date,unemployement_rate) VALUES (STR_TO_DATE('%s', '%s'),%s)" % (row['date'], datepatern, float(row['unemployement_rate'])) 
+	if (debug): print("[INFO] - " + query)
+	cursor.execute(query)
+
+def importSingleParentRate(row): 
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE single_parent_rate : "+ row["date"])  	
+	if (debug): print(row)
+	datepatern = '%Y-%m-%d'
+	query = "INSERT INTO single_parent_rate (date,single_parent_rate) VALUES (STR_TO_DATE('%s', '%s'),%s)" % (row['date'], datepatern, float(row['single_parent_rate'])) 
 	if (debug): print("[INFO] - " + query)
 	cursor.execute(query)
 
@@ -197,9 +206,17 @@ def initializeUnemployementLA():
 	if (verbose) : print ("[INFO] - Creating TABLE unemployement_LA")  
 	cursor.execute("""
 	CREATE TABLE IF NOT EXISTS unemployement_LA (
-		year varchar(4),
-		month varchar(12),
-		unemployement_Rate DECIMAL(4,2)
+		date DATE,
+		unemployement_rate DECIMAL(4,2)
+	) ENGINE=InnoDB ;	
+	""")
+
+def initializeSingleParentRate():
+	if (verbose) : print ("[INFO] - Creating TABLE single_parent_rate")  
+	cursor.execute("""
+	CREATE TABLE IF NOT EXISTS single_parent_rate (
+		date DATE,
+		single_parent_rate DECIMAL(4,2)
 	) ENGINE=InnoDB ;	
 	""")
 
@@ -457,6 +474,7 @@ initializeNormalizedTable()
 initializeFullMoonTable()
 initializeDemographieLA()
 initializeUnemployementLA()
+initializeSingleParentRate()
 
 # ---- commit Changes into DataBase
 conn.commit()
@@ -518,10 +536,19 @@ with open(csvLink) as csvLinkRead :
 		importDemographieLA(row)
 conn.commit()
 
-# ---- fill Demogrphic data from demo_LA.csv
-csvLink = '../source/Unemployment_Rate_LA.csv'
+# ---- fill Unemployement Rate data from Unemployement_Rate_LA.csv
+csvLink = '../source/Unemployement_Rate_LA.csv'
 with open(csvLink) as csvLinkRead :
 	reader = csv.DictReader(csvLinkRead, delimiter = ',')
 	for row in reader:
 		importUnemployementRate(row)
+conn.commit()
+
+
+# ---- fill Single Parent Rate data from demo_LA.csv
+csvLink = '../source/SingleParentRate.csv'
+with open(csvLink) as csvLinkRead :
+	reader = csv.DictReader(csvLinkRead, delimiter = ',')
+	for row in reader:
+		importSingleParentRate(row)
 conn.commit()
