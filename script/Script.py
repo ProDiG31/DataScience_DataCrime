@@ -20,7 +20,7 @@ def initializeDatabase():
 	cursor.execute("CREATE DATABASE IF NOT EXISTS %s ;" % database)
 
 def useDb():
-	print("[INFO] - d_vigne database Selected")
+	print("[INFO] - db_dataCrime database Selected")
 	cursor.execute("USE %s;" % database ) 
 
 def clearDb():
@@ -34,6 +34,7 @@ def clearDb():
 	cursor.execute("DROP TABLE IF EXISTS modus_Operandi_type;") 
 	cursor.execute("DROP TABLE IF EXISTS status_type;") 
 	cursor.execute("DROP TABLE IF EXISTS descent_type;") 
+	cursor.execute("DROP TABLE IF EXISTS fullMoon;") 
 
 def initializeTableImport():
 	print ("[INFO] - Creating TABLE %s" % table_import_temp)  
@@ -147,6 +148,23 @@ def ImportRowInTempTable(row):
 	)  	
 )
 
+def importFullMoonData(row):
+	if (verbose) :print ("[INFO] - Inserting import data into TABLE FullMoon : "+ row["full_moon_date"])  	
+	if (debug): print(row)
+	date = str(row["full_moon_date"])
+	query = "INSERT IGNORE INTO FullMoon (Date_fullMoon) VALUES (STR_TO_DATE(" + date + ", '%m/%d/%Y'))" 
+	cursor.execute(query)
+
+def initializeFullMoonTable():
+	print ("[INFO] - Creating TABLE FullMoonTable")  
+	cursor.execute("""
+	CREATE TABLE IF NOT EXISTS FullMoon (
+		id_fullMoon int(2) NOT NULL,
+		Date_fullMoon DATE,
+		CONSTRAINT pk_id_fullMoon PRIMARY KEY(id_fullMoon)
+	) ENGINE=InnoDB ;	
+	""")
+
 
 def initializeNormalizedTable():
 # 	print ("[INFO] - Creating TABLE crime, area, weapon_type, crime_type, premise_type, modus_Operandi_type, status_type and descent_typeDescend_type ("[INFO] - Creating TABLE crime, area, weapon_type, crime_type, premise_type, modus_Operandi_type, status_type and descent_type ")
@@ -242,7 +260,7 @@ def initializeNormalizedTable():
 #			CONSTRAINT fk_Descend_type FOREIGN KEY (Victim_Descent) REFERENCES descent_type(id_Descent)
 
 	
-def importMoCodes(row): 
+def importMoCodes(row):
 	if (verbose) : print ("[INFO] - Importing Mo_Codes : "+ row['id_Modus_Operandi'])
 	if (debug) : print (row)
 
@@ -391,16 +409,18 @@ conn.commit()
 
 # ---- Create Temp Table for inline Import 
 initializeTableImport()
-conn.commit()
 
 # ---- create normalized tables
 initializeNormalizedTable()
+initializeFullMoonTable()
+
+# ---- commit Changes into DataBase
 conn.commit()
 
 
 # ---- Read Cleared data imported from US Open Data
 #filename = '../source/Crime_Data_from_2010_to_Present.csv'
-filename = '../source/CrimeDataLight2.csv'
+filename = '../source/CrimeDataLight.csv'
 with open(filename) as csvfile:
 
 # ---- Read each line of csv file
@@ -436,4 +456,12 @@ with open(csvLink) as csvLinkRead :
 conn.commit()
 
 importCrimeFact()
+conn.commit()
+
+# ---- fill Full Moon data from full_moon.csv
+csvLink = '../source/full_moon.csv'
+with open(csvLink) as csvLinkRead :
+	reader = csv.DictReader(csvLinkRead, delimiter = ',')
+	for row in reader:
+		importFullMoonData(row)
 conn.commit()
