@@ -1,5 +1,5 @@
 # coding: utf-8
-import mysql.connector 
+import mysql.connector
 import csv
 
 # -------- VARIABLES DECLARATION ZONE  ------------------
@@ -21,25 +21,25 @@ def initializeDatabase():
 
 def useDb():
 	print("[INFO] - db_dataCrime database Selected")
-	cursor.execute("USE %s;" % database ) 
+	cursor.execute("USE %s;" % database )
 
 def clearDb():
 	print ("[INFO] - Dropping Previous Tables")
 	cursor.execute("DROP TABLE IF EXISTS %s;" % table_import_temp)
-	cursor.execute("DROP TABLE IF EXISTS crime;") 
-	cursor.execute("DROP TABLE IF EXISTS area;") 
-	cursor.execute("DROP TABLE IF EXISTS weapon_type;") 
-	cursor.execute("DROP TABLE IF EXISTS crime_type;") 
-	cursor.execute("DROP TABLE IF EXISTS premise_type;") 
-	cursor.execute("DROP TABLE IF EXISTS modus_operandi_type;") 
-	cursor.execute("DROP TABLE IF EXISTS status_type;") 
-	cursor.execute("DROP TABLE IF EXISTS descent_type;") 
-	cursor.execute("DROP TABLE IF EXISTS fullMoon;") 
-	cursor.execute("DROP TABLE IF EXISTS demographie_LA;") 
-	cursor.execute("DROP TABLE IF EXISTS unemployement_LA;") 
+	cursor.execute("DROP TABLE IF EXISTS crime;")
+	cursor.execute("DROP TABLE IF EXISTS area;")
+	cursor.execute("DROP TABLE IF EXISTS weapon_type;")
+	cursor.execute("DROP TABLE IF EXISTS crime_type;")
+	cursor.execute("DROP TABLE IF EXISTS premise_type;")
+	cursor.execute("DROP TABLE IF EXISTS modus_operandi_type;")
+	cursor.execute("DROP TABLE IF EXISTS status_type;")
+	cursor.execute("DROP TABLE IF EXISTS descent_type;")
+	cursor.execute("DROP TABLE IF EXISTS fullMoon;")
+	cursor.execute("DROP TABLE IF EXISTS demographie_LA;")
+	cursor.execute("DROP TABLE IF EXISTS unemployement_LA;")
 
 def initializeTableImport():
-	print ("[INFO] - Creating TABLE %s" % table_import_temp)  
+	print ("[INFO] - Creating TABLE %s" % table_import_temp)
 	cursor.execute("""
 	CREATE TABLE IF NOT EXISTS t_crime_import (
 		DR_Number varchar(9),
@@ -69,20 +69,20 @@ def initializeTableImport():
 		cross_street varchar(100),
 		location varchar(100),
 		constraint pk_id_DR_Number PRIMARY KEY (DR_Number)
-	) ENGINE=InnoDB ;	
+	) ENGINE=InnoDB ;
 	""")
-		
-def ImportRowInTempTable(row): 
-	if (verbose) :print ("[INFO] - Inserting Or Updating Raw into TABLE t_crime_import : "+ row["DR Number"])  	
+
+def ImportRowInTempTable(row):
+	if (verbose) :print ("[INFO] - Inserting Or Updating Raw into TABLE t_crime_import : "+ row["DR Number"])
 	if (debug): print(row)
-	
-	victim_age = 0 
+
+	victim_age = 0
 	if (row['Victim Age'] != '') : victim_age = int(row['Victim Age'])
-	
+
 	weapon_Used_code = 0
 	if (row['Weapon Used Code'] != '') : weapon_Used_code = int(row['Weapon Used Code'])
-	
-	premise_Code = 0 	
+
+	premise_Code = 0
 	if(row['Premise Code'] != '') : premise_Code = int(row['Premise Code'])
 
 	cursor.execute("""
@@ -113,13 +113,13 @@ def ImportRowInTempTable(row):
 		address,
 		cross_street,
 		location
-		)  
+		)
 	  VALUES (%s, STR_TO_DATE(%s, '%m/%d/%Y'), STR_TO_DATE(%s, '%m/%d/%Y'), %s, %s,
 		    %s, %s, %s, %s, %s,
-		    %s, %s, %s, %s, %s, 
+		    %s, %s, %s, %s, %s,
 		    %s, %s, %s, %s, %s,
 			%s, %s, %s, %s, %s,
-			%s) 		
+			%s)
 	""", (
 		row["DR Number"],
 		row["Date Reported"],
@@ -139,98 +139,98 @@ def ImportRowInTempTable(row):
 		weapon_Used_code,
 		row['Weapon Description'],
 		row['Status Code'],
-		row['Status Description'],		
-		row['Crime Code 1'],		
-		row['Crime Code 2'],		
-		row['Crime Code 3'],		
-		row['Crime Code 4'],		
-		row['Address'],		
-		row['Cross Street'],		
-		row['Location']     
-	)  	
+		row['Status Description'],
+		row['Crime Code 1'],
+		row['Crime Code 2'],
+		row['Crime Code 3'],
+		row['Crime Code 4'],
+		row['Address'],
+		row['Cross Street'],
+		row['Location']
+	)
 )
 
-def importDemographieLA(row): 
-	if (verbose) : print ("[INFO] - Inserting import data into TABLE demographie_LA : "+ row["Year"])  	
+def importDemographieLA(row):
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE demographie_LA : "+ row["Year"])
 	if (debug): print(row)
 	query = "INSERT INTO demographie_LA (year, population) VALUES (%s, %s) " % (row["Year"],row['Population'])
 	if (debug):print("[INFO] - " + query)
 	cursor.execute(query)
 
 def importFullMoonData(row):
-	if (verbose) : print ("[INFO] - Inserting import data into TABLE fullmoon : "+ row["full_moon_date"])  	
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE fullmoon : "+ row["full_moon_date"])
 	if (debug): print(row)
 	date = str(row["full_moon_date"])
-	query = "INSERT INTO fullmoon (date_fullmoon) VALUES (STR_TO_DATE(\'" + date + "\', '%m/%d/%Y'))" 
+	query = "INSERT INTO fullmoon (date_fullmoon) VALUES (STR_TO_DATE(\'" + date + "\', '%m/%d/%Y'))"
 	if (debug): print("[INFO] - " + query)
 	cursor.execute(query)
 
 def importUnemployementRate(row):
-	if (verbose) : print ("[INFO] - Inserting import data into TABLE unemployement_LA : "+ row["date"])  	
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE unemployement_LA : "+ row["date"])
 	if (debug): print(row)
 
 	datepatern = '%Y-%m-%d'
-	query = "INSERT INTO unemployement_LA (date,unemployement_rate) VALUES (STR_TO_DATE('%s', '%s'),%s)" % (row['date'], datepatern, float(row['unemployement_rate'])) 
+	query = "INSERT INTO unemployement_LA (date,unemployement_rate) VALUES (STR_TO_DATE('%s', '%s'),%s)" % (row['date'], datepatern, float(row['unemployement_rate']))
 	if (debug): print("[INFO] - " + query)
 	cursor.execute(query)
 
-def importSingleParentRate(row): 
-	if (verbose) : print ("[INFO] - Inserting import data into TABLE single_parent_rate : "+ row["date"])  	
+def importSingleParentRate(row):
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE single_parent_rate : "+ row["date"])
 	if (debug): print(row)
 	datepatern = '%Y-%m-%d'
-	query = "INSERT INTO single_parent_rate (date,single_parent_rate) VALUES (STR_TO_DATE('%s', '%s'),%s)" % (row['date'], datepatern, float(row['single_parent_rate'])) 
+	query = "INSERT INTO single_parent_rate (date,single_parent_rate) VALUES (STR_TO_DATE('%s', '%s'),%s)" % (row['date'], datepatern, float(row['single_parent_rate']))
 	if (debug): print("[INFO] - " + query)
 	cursor.execute(query)
 
 
 def initializeFullMoonTable():
-	if (verbose) : print ("[INFO] - Creating TABLE fullmoon")  
+	if (verbose) : print ("[INFO] - Creating TABLE fullmoon")
 	cursor.execute("""
 	CREATE TABLE IF NOT EXISTS fullmoon (
 		id_fullmoon int(2) NOT NULL AUTO_INCREMENT,
 		date_fullmoon DATE,
 		CONSTRAINT pk_id_fullmoon PRIMARY KEY(id_fullmoon)
-	) ENGINE=InnoDB ;	
+	) ENGINE=InnoDB ;
 	""")
 
 def initializeDemographieLA():
-	if (verbose) : print ("[INFO] - Creating TABLE demographie_LA")  
+	if (verbose) : print ("[INFO] - Creating TABLE demographie_LA")
 	cursor.execute("""
 	CREATE TABLE IF NOT EXISTS demographie_LA (
 		year varchar(4),
 		population int(10)
-	) ENGINE=InnoDB ;	
+	) ENGINE=InnoDB ;
 	""")
 
 def initializeUnemployementLA():
-	if (verbose) : print ("[INFO] - Creating TABLE unemployement_LA")  
+	if (verbose) : print ("[INFO] - Creating TABLE unemployement_LA")
 	cursor.execute("""
 	CREATE TABLE IF NOT EXISTS unemployement_LA (
 		date DATE,
 		unemployement_rate DECIMAL(4,2)
-	) ENGINE=InnoDB ;	
+	) ENGINE=InnoDB ;
 	""")
 
 def initializeSingleParentRate():
-	if (verbose) : print ("[INFO] - Creating TABLE single_parent_rate")  
+	if (verbose) : print ("[INFO] - Creating TABLE single_parent_rate")
 	cursor.execute("""
 	CREATE TABLE IF NOT EXISTS single_parent_rate (
 		date DATE,
 		single_parent_rate DECIMAL(4,2)
-	) ENGINE=InnoDB ;	
+	) ENGINE=InnoDB ;
 	""")
 
 def initializeNormalizedTable():
 	if (verbose) : print ("[INFO] - Creating TABLE area ")
 	cursor.execute("""
 	       CREATE TABLE area (
-		id_area int(2) NOT NULL, 
-		area_name varchar(100) NOT NULL, 
+		id_area int(2) NOT NULL,
+		area_name varchar(100) NOT NULL,
 		CONSTRAINT pk_id_Area PRIMARY KEY(id_area)
 	) ENGINE=InnoDB;
 	""")
 
-	if (verbose) : print ("[INFO] - Creating TABLE weapon_type")	
+	if (verbose) : print ("[INFO] - Creating TABLE weapon_type")
 	cursor.execute("""
 		CREATE TABLE weapon_type (
 			id_weapon int(3) NOT NULL,
@@ -239,7 +239,7 @@ def initializeNormalizedTable():
 		) ENGINE=InnoDB;
 	""")
 
-	if (verbose) : print ("[INFO] - Creating TABLE crime_type ")	
+	if (verbose) : print ("[INFO] - Creating TABLE crime_type ")
 	cursor.execute("""
 		CREATE TABLE crime_type (
 			id_crime int(3) NOT NULL,
@@ -256,7 +256,7 @@ def initializeNormalizedTable():
 			CONSTRAINT pk_id_Premise PRIMARY KEY(id_premise)
 		) ENGINE=InnoDB;
 	""")
-	
+
 	if (verbose) : print ("[INFO] - Creating TABLE modus_operandi_type ")
 	cursor.execute("""
 		CREATE TABLE modus_operandi_type (
@@ -265,7 +265,7 @@ def initializeNormalizedTable():
 			CONSTRAINT pk_id_Modus_Operandi PRIMARY KEY(id_modus_operandi)
 		) ENGINE=InnoDB;
 	""")
-	
+
 	if (verbose) : print ("[INFO] - Creating TABLE status_type ")
 	cursor.execute("""
 		CREATE TABLE status_type (
@@ -275,7 +275,7 @@ def initializeNormalizedTable():
 		) ENGINE=InnoDB;
 	""")
 
-	if (verbose) : print ("[INFO] - Creating TABLE descent_typeDescend_type ")	
+	if (verbose) : print ("[INFO] - Creating TABLE descent_typeDescend_type ")
 	cursor.execute("""
 		CREATE TABLE descent_type (
 			id_descent varchar(1) NOT NULL,
@@ -283,7 +283,7 @@ def initializeNormalizedTable():
 			CONSTRAINT pk_id_Descent PRIMARY KEY(id_descent)
 		) ENGINE=InnoDB;
 	""")
-	
+
 	if (verbose) : print ("[INFO] - Creating TABLE crime")
 	cursor.execute("""
 		CREATE TABLE crime (
@@ -307,7 +307,7 @@ def initializeNormalizedTable():
 			crime_code_4 varchar(100),
 			address varchar(100),
 			cross_street varchar(100),
-			location varchar(100),     
+			location varchar(100),
 			CONSTRAINT pk_id_crime PRIMARY KEY (id_crime)
 		) ENGINE=InnoDB;
 	""")
@@ -320,7 +320,7 @@ def initializeNormalizedTable():
 #			CONSTRAINT fk_Status_Code FOREIGN KEY (Status_Code) REFERENCES status_type(id_Status),
 #			CONSTRAINT fk_Descend_type FOREIGN KEY (Victim_Descent) REFERENCES descent_type(id_Descent)
 
-	
+
 def importMoCodes(row):
 	if (verbose) : print ("[INFO] - Importing Mo_Codes : "+ row['id_Modus_Operandi'])
 	if (debug) : print (row)
@@ -329,11 +329,11 @@ def importMoCodes(row):
 	Desc_Mo = row['modus_Operandi_Description']
 
 	query = "INSERT INTO modus_operandi_type (id_modus_operandi,modus_operandi_description )  VALUES (%s, \"%s\")" % (id_Mo, Desc_Mo)
-	
-	if (debug) : print (query) 
+
+	if (debug) : print (query)
 	cursor.execute(query)
 
-def importDescent(row): 
+def importDescent(row):
 	if (verbose) : print ("[INFO] - Importing Descent Value : "+ row['Descent_Description'])
 	if (debug) : print (row)
 
@@ -341,45 +341,45 @@ def importDescent(row):
 	desc_Desc = row['Descent_Description']
 
 	query = "INSERT INTO descent_type (id_descent,descent_description) VALUES (\"%s\", \"%s\")" % (id_Desc, desc_Desc)
-	
-	if (debug) : print (query) 
+
+	if (debug) : print (query)
 	cursor.execute(query)
-	
-def extractWeapon(): 
+
+def extractWeapon():
 	if (verbose) : print ("[INFO] - Extracting Weapons from t_crime ")
 	cursor.execute("""
-			  INSERT INTO weapon_type(id_weapon,weapon_description) 
+			  INSERT INTO weapon_type(id_weapon,weapon_description)
 			  SELECT Distinct weapon_used_code, weapon_description
 				  FROM t_crime_import;
 			""")
 
-def extractPremise(): 
+def extractPremise():
 	if (verbose) : print ("[INFO] - Extracting Premise from t_crime ")
 	cursor.execute("""
-			  INSERT INTO premise_type(id_premise,premise_description) 
+			  INSERT INTO premise_type(id_premise,premise_description)
 			  SELECT Distinct premise_code,premise_description
 				  FROM t_crime_import;
-			""")  
+			""")
 
 def extractArea() :
 	if (verbose) : print ("[INFO] - Extracting Area from t_crime ")
 	cursor.execute("""
-			  INSERT INTO area(id_area,area_name) 
+			  INSERT INTO area(id_area,area_name)
 			  SELECT Distinct id_area,area_name
 				  FROM t_crime_import;
-			""")  
+			""")
 
 def extractCrime() :
 	if (verbose) : print ("[INFO] - Extracting Crime_type from t_crime ")
-	
+
 	cursor.execute("""
-			  INSERT INTO crime_type(id_crime,crime_code_description) 
+			  INSERT INTO crime_type(id_crime,crime_code_description)
 			  SELECT Distinct crime_code,crime_code_description
 				  FROM t_crime_import;
-			""")  		
+			""")
 
-def importCrimeFact() : 
-	if (verbose) : print ("[INFO] - Normalise declaration from t_crime_import ")	
+def importCrimeFact() :
+	if (verbose) : print ("[INFO] - Normalise declaration from t_crime_import ")
 	cursor.execute("""
 			  INSERT INTO crime (
 							id_crime,
@@ -403,8 +403,8 @@ def importCrimeFact() :
 							address,
 							cross_street,
 							location
-							)   
-			  SELECT 
+							)
+			  SELECT
 					DR_Number,
 					date_reported,
 					date_occurred,
@@ -434,14 +434,14 @@ def establishConnection() :
 	print ("[INFO] - procedure de connexion à la base de donnee MYSQL  ")
 	print ("[INFO] - Veuillez pressez ENTER pour valider la valeur par default ")
 
-	inputHost 	= input("[INFO] - Veuillez saisir l' host de la base de donnée (default = "+ defaultHost +") : ") 
-	inputUser 	= input("[INFO] - Veuillez saisir l' identifiant de connexion à la base de donnée (default = "+ defaultUser +") : ") 
-	inputPassword 	= input("[INFO] - Veuillez saisir le password de connexion à la base de donnée (default = "+ defaultPassword +") : ") 
+	inputHost 	= input("[INFO] - Veuillez saisir l' host de la base de donnée (default = "+ defaultHost +") : ")
+	inputUser 	= input("[INFO] - Veuillez saisir l' identifiant de connexion à la base de donnée (default = "+ defaultUser +") : ")
+	inputPassword 	= input("[INFO] - Veuillez saisir le password de connexion à la base de donnée (default = "+ defaultPassword +") : ")
 
 	if len(inputHost) == 0 : 	inputHost = defaultHost
 	if len(inputUser) == 0 : 	inputUser = defaultUser
 	if len(inputPassword) == 0 : 	inputPassword = defaultPassword
- 
+
 	return mysql.connector.connect(host=inputHost,user=inputUser,password=inputPassword)
 
 # -------- SCRIPT BEGINS HERE AND WILL EXECUTE FUNCTIONS DECLARED ABOVE
@@ -451,22 +451,22 @@ def establishConnection() :
 conn = establishConnection()
 #conn = mysql.connector.connect(host="localhost",user="root",password="root")
 
-# ---- Init Mysql Cursor 
+# ---- Init Mysql Cursor
 cursor = conn.cursor()
 
 # ---- Creating database
 initializeDatabase()
 conn.commit()
 
-# ---- Select Database 
+# ---- Select Database
 useDb()
 
-# ---- Clear Database 
+# ---- Clear Database
 clearDb()
 conn.commit()
 
 
-# ---- Create Temp Table for inline Import 
+# ---- Create Temp Table for inline Import
 initializeTableImport()
 
 # ---- create normalized tables
@@ -493,7 +493,7 @@ with open(filename) as csvfile:
 
 conn.commit()
 
-# ---- Infill new Table from t_crime_import	
+# ---- Infill new Table from t_crime_import
 extractArea()
 extractWeapon()
 extractPremise()
@@ -504,7 +504,7 @@ conn.commit()
 csvLink = '../source/mo_code.csv'
 with open(csvLink) as csvLinkRead :
 	reader = csv.DictReader(csvLinkRead, delimiter = ';', lineterminator = '\r')
-	for row in reader: 
+	for row in reader:
 		importMoCodes(row)
 conn.commit()
 
@@ -513,7 +513,7 @@ conn.commit()
 csvLink = '../source/descent_code.csv'
 with open(csvLink) as csvLinkRead :
 	reader = csv.DictReader(csvLinkRead, delimiter = ',')
-	for row in reader: 
+	for row in reader:
 		importDescent(row)
 conn.commit()
 
