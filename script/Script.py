@@ -35,37 +35,39 @@ def clearDb():
 	cursor.execute("DROP TABLE IF EXISTS status_type;") 
 	cursor.execute("DROP TABLE IF EXISTS descent_type;") 
 	cursor.execute("DROP TABLE IF EXISTS fullMoon;") 
+	cursor.execute("DROP TABLE IF EXISTS demographie_LA;") 
+	cursor.execute("DROP TABLE IF EXISTS unemployement_LA;") 
 
 def initializeTableImport():
 	print ("[INFO] - Creating TABLE %s" % table_import_temp)  
 	cursor.execute("""
 	CREATE TABLE IF NOT EXISTS t_crime_import (
 		DR_Number varchar(9),
-		Date_Reported DATE,
-		Date_Occurred DATE,
-		Time_Occurred varchar(4),
-		Area_ID  int(2),
-		Area_Name varchar(100),
-		Reporting_District int(4),
-		Crime_Code int(3),
-		Crime_Code_Description varchar(100),
-		MO_Codes text,
-		Victim_Age int(3),
-		Victim_Sex varchar(1),
-		Victim_Descent varchar(1),
-		Premise_Code int(3),
-		Premise_Description varchar(100),
-		Weapon_Used_Code int(3),
-		Weapon_Description varchar(100),
-		Status_Code varchar(5),
-		Status_Description varchar(100),
-		Crime_Code_1 varchar(100),
-		Crime_Code_2 varchar(100),
-		Crime_Code_3 varchar(100),
-		Crime_Code_4 varchar(100),
-		Address varchar(100),
-		Cross_Street varchar(100),
-		Location varchar(100),
+		date_reported DATE,
+		date_occurred DATE,
+		time_occurred varchar(4),
+		id_area  int(2),
+		area_name varchar(100),
+		reporting_district int(4),
+		crime_code int(3),
+		crime_code_description varchar(100),
+		MO_codes text,
+		victim_age int(3),
+		victim_sex varchar(1),
+		victim_descent varchar(1),
+		premise_code int(3),
+		premise_description varchar(100),
+		weapon_used_code int(3),
+		weapon_description varchar(100),
+		status_code varchar(5),
+		status_description varchar(100),
+		crime_code_1 varchar(100),
+		crime_code_2 varchar(100),
+		crime_code_3 varchar(100),
+		crime_code_4 varchar(100),
+		address varchar(100),
+		cross_street varchar(100),
+		location varchar(100),
 		constraint pk_id_DR_Number PRIMARY KEY (DR_Number)
 	) ENGINE=InnoDB ;	
 	""")
@@ -86,31 +88,31 @@ def ImportRowInTempTable(row):
 	cursor.execute("""
 	 INSERT IGNORE INTO t_crime_import (
 	 	DR_Number,
-		Date_Reported,
-		Date_Occurred,
-		Time_Occurred,
-		Area_ID,
-		Area_Name,
-		Reporting_District,
-		Crime_Code,
-		Crime_Code_Description,
-		MO_Codes,
-		Victim_Age,
-		Victim_Sex,
-		Victim_Descent,
-		Premise_Code,
-		Premise_Description,
-		Weapon_Used_Code,
-		Weapon_Description,
-		Status_Code,
-		Status_Description,
-		Crime_Code_1,
-		Crime_Code_2,
-		Crime_Code_3,
-		Crime_Code_4,
-		Address,
-		Cross_Street,
-		Location
+		date_reported,
+		date_occurred,
+		time_occurred,
+		id_area,
+		area_name,
+		reporting_district,
+		crime_code,
+		crime_code_description,
+		MO_codes,
+		victim_age,
+		victim_sex,
+		victim_descent,
+		premise_code,
+		premise_description,
+		weapon_used_code,
+		weapon_description,
+		status_code,
+		status_description,
+		crime_code_1,
+		crime_code_2,
+		crime_code_3,
+		crime_code_4,
+		address,
+		cross_street,
+		location
 		)  
 	  VALUES (%s, STR_TO_DATE(%s, '%m/%d/%Y'), STR_TO_DATE(%s, '%m/%d/%Y'), %s, %s,
 		    %s, %s, %s, %s, %s,
@@ -149,27 +151,36 @@ def ImportRowInTempTable(row):
 )
 
 def importDemographieLA(row): 
-	if (verbose) : print ("[INFO] - Inserting import data into TABLE Demographie_LA : "+ row["Year"])  	
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE demographie_LA : "+ row["Year"])  	
 	if (debug): print(row)
-	query = "INSERT INTO Demographie_LA (year, population) VALUES (%s, %s) " % (row["Year"],row['Population'])
+	query = "INSERT INTO demographie_LA (year, population) VALUES (%s, %s) " % (row["Year"],row['Population'])
 	print("[INFO] - " + query)
 	cursor.execute(query)
 
 def importFullMoonData(row):
-	if (verbose) : print ("[INFO] - Inserting import data into TABLE FullMoon : "+ row["full_moon_date"])  	
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE fullmoon : "+ row["full_moon_date"])  	
 	if (debug): print(row)
 	date = str(row["full_moon_date"])
-	query = "INSERT INTO FullMoon (Date_fullMoon) VALUES (STR_TO_DATE(\'" + date + "\', '%m/%d/%Y'))" 
-	print("[INFO] - " + query)
+	query = "INSERT INTO fullmoon (date_fullmoon) VALUES (STR_TO_DATE(\'" + date + "\', '%m/%d/%Y'))" 
+	if (debug): print("[INFO] - " + query)
 	cursor.execute(query)
 
+def importUnemployementRate(row):
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE unemployement_LA : "+ row["month"])  	
+	if (debug): print(row)
+	
+	query = "INSERT INTO unemployement_LA (year,month,unemployement_rate) VALUES (%s,'%s',%s)" % (row['year'], row['month'], row['unemployement_rate'][:-1]) 
+	if (debug): print("[INFO] - " + query)
+	cursor.execute(query)
+
+
 def initializeFullMoonTable():
-	if (verbose) : print ("[INFO] - Creating TABLE FullMoonTable")  
+	if (verbose) : print ("[INFO] - Creating TABLE fullmoon")  
 	cursor.execute("""
-	CREATE TABLE IF NOT EXISTS FullMoon (
-		id_fullMoon int(2) NOT NULL AUTO_INCREMENT,
-		Date_fullMoon DATE,
-		CONSTRAINT pk_id_fullMoon PRIMARY KEY(id_fullMoon)
+	CREATE TABLE IF NOT EXISTS fullmoon (
+		id_fullmoon int(2) NOT NULL AUTO_INCREMENT,
+		date_fullmoon DATE,
+		CONSTRAINT pk_id_fullmoon PRIMARY KEY(id_fullmoon)
 	) ENGINE=InnoDB ;	
 	""")
 
@@ -182,67 +193,77 @@ def initializeDemographieLA():
 	) ENGINE=InnoDB ;	
 	""")
 
+def initializeUnemployementLA():
+	if (verbose) : print ("[INFO] - Creating TABLE unemployement_LA")  
+	cursor.execute("""
+	CREATE TABLE IF NOT EXISTS unemployement_LA (
+		year varchar(4),
+		month varchar(12),
+		unemployement_Rate int(10)
+	) ENGINE=InnoDB ;	
+	""")
+
 def initializeNormalizedTable():
 	if (verbose) : print ("[INFO] - Creating TABLE area ")
 	cursor.execute("""
 	       CREATE TABLE area (
-		id_Area int(2) NOT NULL, 
-		area_Name varchar(100) NOT NULL, 
-		CONSTRAINT pk_id_Area PRIMARY KEY(id_Area)
+		id_area int(2) NOT NULL, 
+		area_name varchar(100) NOT NULL, 
+		CONSTRAINT pk_id_Area PRIMARY KEY(id_area)
 	) ENGINE=InnoDB;
 	""")
 
 	if (verbose) : print ("[INFO] - Creating TABLE weapon_type")	
 	cursor.execute("""
 		CREATE TABLE weapon_type (
-			id_Weapon int(3) NOT NULL,
-			weapon_Description varchar(100) NOT NULL,
-			CONSTRAINT pk_id_Weapon PRIMARY KEY(id_Weapon)
+			id_weapon int(3) NOT NULL,
+			weapon_description varchar(100) NOT NULL,
+			CONSTRAINT pk_id_Weapon PRIMARY KEY(id_weapon)
 		) ENGINE=InnoDB;
 	""")
 
 	if (verbose) : print ("[INFO] - Creating TABLE crime_type ")	
 	cursor.execute("""
 		CREATE TABLE crime_type (
-			id_Crime int(3) NOT NULL,
-			crime_Code_Description varchar(100) NOT NULL,
-			CONSTRAINT pk_id_Crime PRIMARY KEY(id_Crime)
+			id_crime int(3) NOT NULL,
+			crime_code_Description varchar(100) NOT NULL,
+			CONSTRAINT pk_id_Crime PRIMARY KEY(id_crime)
 		) ENGINE=InnoDB;
 	""")
 
 	if (verbose) : print ("[INFO] - Creating TABLE premise_type")
 	cursor.execute("""
 		CREATE TABLE premise_type (
-			id_Premise int(3) NOT NULL,
-			premise_Description varchar(100) NOT NULL,
-			CONSTRAINT pk_id_Premise PRIMARY KEY(id_Premise)
+			id_premise int(3) NOT NULL,
+			premise_description varchar(100) NOT NULL,
+			CONSTRAINT pk_id_Premise PRIMARY KEY(id_premise)
 		) ENGINE=InnoDB;
 	""")
 	
-	if (verbose) : print ("[INFO] - Creating TABLE modus_Operandi_type ")
+	if (verbose) : print ("[INFO] - Creating TABLE modus_operandi_type ")
 	cursor.execute("""
 		CREATE TABLE modus_operandi_type (
-			id_Modus_Operandi int(3) NOT NULL,
-			modus_Operandi_Description varchar(200) NOT NULL,
-			CONSTRAINT pk_id_Modus_Operandi PRIMARY KEY(id_Modus_Operandi)
+			id_modus_operandi int(3) NOT NULL,
+			modus_operandi_description varchar(200) NOT NULL,
+			CONSTRAINT pk_id_Modus_Operandi PRIMARY KEY(id_modus_operandi)
 		) ENGINE=InnoDB;
 	""")
 	
 	if (verbose) : print ("[INFO] - Creating TABLE status_type ")
 	cursor.execute("""
 		CREATE TABLE status_type (
-			id_Status varchar(5) NOT NULL,
-			status_Description varchar(100) NOT NULL,
-			CONSTRAINT pk_id_Status PRIMARY KEY(id_Status)
+			id_status varchar(5) NOT NULL,
+			status_description varchar(100) NOT NULL,
+			CONSTRAINT pk_id_Status PRIMARY KEY(id_status)
 		) ENGINE=InnoDB;
 	""")
 
 	if (verbose) : print ("[INFO] - Creating TABLE descent_typeDescend_type ")	
 	cursor.execute("""
 		CREATE TABLE descent_type (
-			id_Descent varchar(1) NOT NULL,
-			descent_Description varchar(100) NOT NULL,
-			CONSTRAINT pk_id_Descent PRIMARY KEY(id_Descent)
+			id_descent varchar(1) NOT NULL,
+			descent_description varchar(100) NOT NULL,
+			CONSTRAINT pk_id_Descent PRIMARY KEY(id_descent)
 		) ENGINE=InnoDB;
 	""")
 	
@@ -250,26 +271,26 @@ def initializeNormalizedTable():
 	cursor.execute("""
 		CREATE TABLE crime (
 			id_crime varchar(9),
-			Date_Reported DATE,
-			Date_Occurred DATE,
-			Time_Occurred varchar(4),
-			Area_ID  int(2),
-			Reporting_District int(4),
-			Crime_Code int(3),
-			MO_Codes varchar(200),
-			Victim_Age int(3),
-			Victim_Sex varchar(1),
-			Victim_Descent varchar(1),
-			Premise_Code int(3),
-			Weapon_Used_Code int(3),
-			Status_Code varchar(5),
-			Crime_Code_1 varchar(100),
-			Crime_Code_2 varchar(100),
-			Crime_Code_3 varchar(100),
-			Crime_Code_4 varchar(100),
-			Address varchar(100),
-			Cross_Street varchar(100),
-			Location varchar(100),     
+			date_reported DATE,
+			date_occurred DATE,
+			time_occurred varchar(4),
+			id_area  int(2),
+			reporting_district int(4),
+			crime_code int(3),
+			MO_codes varchar(200),
+			victim_age int(3),
+			victim_sex varchar(1),
+			victim_descent varchar(1),
+			premise_code int(3),
+			weapon_used_code int(3),
+			status_code varchar(5),
+			crime_code_1 varchar(100),
+			crime_code_2 varchar(100),
+			crime_code_3 varchar(100),
+			crime_code_4 varchar(100),
+			address varchar(100),
+			cross_street varchar(100),
+			location varchar(100),     
 			CONSTRAINT pk_id_crime PRIMARY KEY (id_crime)
 		) ENGINE=InnoDB;
 	""")
@@ -290,7 +311,7 @@ def importMoCodes(row):
 	id_Mo = row['id_Modus_Operandi']
 	Desc_Mo = row['modus_Operandi_Description']
 
-	query = "INSERT INTO modus_operandi_type (id_Modus_Operandi,modus_Operandi_Description )  VALUES (%s, \"%s\")" % (id_Mo, Desc_Mo)
+	query = "INSERT INTO modus_operandi_type (id_modus_operandi,modus_operandi_description )  VALUES (%s, \"%s\")" % (id_Mo, Desc_Mo)
 	
 	if (debug) : print (query) 
 	cursor.execute(query)
@@ -302,7 +323,7 @@ def importDescent(row):
 	id_Desc = row['Descent_Code']
 	desc_Desc = row['Descent_Description']
 
-	query = "INSERT INTO descent_type (id_Descent,descent_Description) VALUES (\"%s\", \"%s\")" % (id_Desc, desc_Desc)
+	query = "INSERT INTO descent_type (id_descent,descent_description) VALUES (\"%s\", \"%s\")" % (id_Desc, desc_Desc)
 	
 	if (debug) : print (query) 
 	cursor.execute(query)
@@ -310,24 +331,24 @@ def importDescent(row):
 def extractWeapon(): 
 	if (verbose) : print ("[INFO] - Extracting Weapons from t_crime ")
 	cursor.execute("""
-			  INSERT INTO weapon_type(id_Weapon,weapon_Description) 
-			  SELECT Distinct Weapon_Used_Code, Weapon_Description
+			  INSERT INTO weapon_type(id_weapon,weapon_description) 
+			  SELECT Distinct weapon_used_code, weapon_description
 				  FROM t_crime_import;
 			""")
 
 def extractPremise(): 
 	if (verbose) : print ("[INFO] - Extracting Premise from t_crime ")
 	cursor.execute("""
-			  INSERT INTO premise_type(id_Premise,premise_Description) 
-			  SELECT Distinct Premise_Code,Premise_Description
+			  INSERT INTO premise_type(id_premise,premise_description) 
+			  SELECT Distinct premise_code,premise_description
 				  FROM t_crime_import;
 			""")  
 
 def extractArea() :
 	if (verbose) : print ("[INFO] - Extracting Area from t_crime ")
 	cursor.execute("""
-			  INSERT INTO area(id_area,area_Name) 
-			  SELECT Distinct Area_ID,Area_Name
+			  INSERT INTO area(id_area,area_name) 
+			  SELECT Distinct id_area,area_name
 				  FROM t_crime_import;
 			""")  
 
@@ -335,8 +356,8 @@ def extractCrime() :
 	if (verbose) : print ("[INFO] - Extracting Crime_type from t_crime ")
 	
 	cursor.execute("""
-			  INSERT INTO crime_type(id_Crime,crime_Code_Description) 
-			  SELECT Distinct Crime_Code,Crime_Code_Description
+			  INSERT INTO crime_type(id_crime,crime_code_description) 
+			  SELECT Distinct crime_code,crime_code_description
 				  FROM t_crime_import;
 			""")  		
 
@@ -345,49 +366,49 @@ def importCrimeFact() :
 	cursor.execute("""
 			  INSERT INTO crime (
 							id_crime,
-							Date_Reported,
-							Date_Occurred,
-							Time_Occurred,
-							Area_ID,
-							Reporting_District,
-							Crime_Code,
-							MO_Codes,
-							Victim_Age,
-							Victim_Sex,
-							Victim_Descent,
-							Premise_Code,
-							Weapon_Used_Code,
-							Status_Code,
-							Crime_Code_1,
-							Crime_Code_2,
-							Crime_Code_3,
-							Crime_Code_4,
-							Address,
-							Cross_Street,
-							Location
+							date_reported,
+							date_occurred,
+							time_occurred,
+							id_area,
+							reporting_district,
+							crime_code,
+							MO_codes,
+							victim_age,
+							victim_sex,
+							victim_descent,
+							premise_code,
+							weapon_used_code,
+							status_code,
+							crime_code_1,
+							crime_code_2,
+							crime_code_3,
+							crime_code_4,
+							address,
+							cross_street,
+							location
 							)   
 			  SELECT 
 					DR_Number,
-					Date_Reported,
-					Date_Occurred,
-					Time_Occurred,
-					Area_ID,
-					Reporting_District,
-					Crime_Code,
-					MO_Codes,
-					Victim_Age,
-					Victim_Sex,
-					Victim_Descent,
-					Premise_Code,
-					Weapon_Used_Code,
-					Status_Code,
-					Crime_Code_1,
-					Crime_Code_2,
-					Crime_Code_3,
-					Crime_Code_4,
-					Address,
-					Cross_Street,
-					Location
+					date_reported,
+					date_occurred,
+					time_occurred,
+					id_area,
+					reporting_district,
+					crime_code,
+					MO_codes,
+					victim_age,
+					victim_sex,
+					victim_descent,
+					premise_code,
+					weapon_used_code,
+					status_code,
+					crime_code_1,
+					crime_code_2,
+					crime_code_3,
+					crime_code_4,
+					address,
+					cross_street,
+					location
 		          FROM t_crime_import;
 		""")
 
@@ -410,9 +431,8 @@ def establishConnection() :
 
 # ---- Connection to Mysql Server
 
-conn = establishConnection();
+conn = establishConnection()
 #conn = mysql.connector.connect(host="localhost",user="root",password="root")
-
 
 # ---- Init Mysql Cursor 
 cursor = conn.cursor()
@@ -436,6 +456,7 @@ initializeTableImport()
 initializeNormalizedTable()
 initializeFullMoonTable()
 initializeDemographieLA()
+initializeUnemployementLA()
 
 # ---- commit Changes into DataBase
 conn.commit()
@@ -489,10 +510,18 @@ with open(csvLink) as csvLinkRead :
 		importFullMoonData(row)
 conn.commit()
 
-# ---- fill Full Moon data from full_moon.csv
+# ---- fill Demogrphic data from demo_LA.csv
 csvLink = '../source/demo_LA.csv'
 with open(csvLink) as csvLinkRead :
 	reader = csv.DictReader(csvLinkRead, delimiter = ',')
 	for row in reader:
 		importDemographieLA(row)
+conn.commit()
+
+# ---- fill Demogrphic data from demo_LA.csv
+csvLink = '../source/Unemployment_Rate_LA.csv'
+with open(csvLink) as csvLinkRead :
+	reader = csv.DictReader(csvLinkRead, delimiter = ',')
+	for row in reader:
+		importUnemployementRate(row)
 conn.commit()
