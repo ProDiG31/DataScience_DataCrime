@@ -152,14 +152,15 @@ def importFullMoonData(row):
 	if (verbose) :print ("[INFO] - Inserting import data into TABLE FullMoon : "+ row["full_moon_date"])  	
 	if (debug): print(row)
 	date = str(row["full_moon_date"])
-	query = "INSERT IGNORE INTO FullMoon (Date_fullMoon) VALUES (STR_TO_DATE(" + date + ", '%m/%d/%Y'))" 
+	query = "INSERT INTO FullMoon (Date_fullMoon) VALUES (STR_TO_DATE(\'" + date + "\', '%m/%d/%Y'))" 
+	print("[INFO] - " + query)
 	cursor.execute(query)
 
 def initializeFullMoonTable():
 	print ("[INFO] - Creating TABLE FullMoonTable")  
 	cursor.execute("""
 	CREATE TABLE IF NOT EXISTS FullMoon (
-		id_fullMoon int(2) NOT NULL,
+		id_fullMoon int(2) NOT NULL AUTO_INCREMENT,
 		Date_fullMoon DATE,
 		CONSTRAINT pk_id_fullMoon PRIMARY KEY(id_fullMoon)
 	) ENGINE=InnoDB ;	
