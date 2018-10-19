@@ -149,7 +149,7 @@ def ImportRowInTempTable(row):
 )
 
 def importFullMoonData(row):
-	if (verbose) :print ("[INFO] - Inserting import data into TABLE FullMoon : "+ row["full_moon_date"])  	
+	if (verbose) : print ("[INFO] - Inserting import data into TABLE FullMoon : "+ row["full_moon_date"])  	
 	if (debug): print(row)
 	date = str(row["full_moon_date"])
 	query = "INSERT INTO FullMoon (Date_fullMoon) VALUES (STR_TO_DATE(\'" + date + "\', '%m/%d/%Y'))" 
@@ -157,7 +157,7 @@ def importFullMoonData(row):
 	cursor.execute(query)
 
 def initializeFullMoonTable():
-	print ("[INFO] - Creating TABLE FullMoonTable")  
+	if (verbose) : print ("[INFO] - Creating TABLE FullMoonTable")  
 	cursor.execute("""
 	CREATE TABLE IF NOT EXISTS FullMoon (
 		id_fullMoon int(2) NOT NULL AUTO_INCREMENT,
@@ -168,7 +168,7 @@ def initializeFullMoonTable():
 
 
 def initializeNormalizedTable():
-# 	print ("[INFO] - Creating TABLE crime, area, weapon_type, crime_type, premise_type, modus_Operandi_type, status_type and descent_typeDescend_type ("[INFO] - Creating TABLE crime, area, weapon_type, crime_type, premise_type, modus_Operandi_type, status_type and descent_type ")
+	if (verbose) : print ("[INFO] - Creating TABLE area ")
 	cursor.execute("""
 	       CREATE TABLE area (
 		id_Area int(2) NOT NULL, 
@@ -177,6 +177,7 @@ def initializeNormalizedTable():
 	) ENGINE=InnoDB;
 	""")
 
+	if (verbose) : print ("[INFO] - Creating TABLE weapon_type")	
 	cursor.execute("""
 		CREATE TABLE weapon_type (
 			id_Weapon int(3) NOT NULL,
@@ -184,7 +185,8 @@ def initializeNormalizedTable():
 			CONSTRAINT pk_id_Weapon PRIMARY KEY(id_Weapon)
 		) ENGINE=InnoDB;
 	""")
-	
+
+	if (verbose) : print ("[INFO] - Creating TABLE crime_type ")	
 	cursor.execute("""
 		CREATE TABLE crime_type (
 			id_Crime int(3) NOT NULL,
@@ -193,6 +195,7 @@ def initializeNormalizedTable():
 		) ENGINE=InnoDB;
 	""")
 
+	if (verbose) : print ("[INFO] - Creating TABLE premise_type")
 	cursor.execute("""
 		CREATE TABLE premise_type (
 			id_Premise int(3) NOT NULL,
@@ -201,6 +204,7 @@ def initializeNormalizedTable():
 		) ENGINE=InnoDB;
 	""")
 	
+	if (verbose) : print ("[INFO] - Creating TABLE modus_Operandi_type ")
 	cursor.execute("""
 		CREATE TABLE modus_operandi_type (
 			id_Modus_Operandi int(3) NOT NULL,
@@ -209,6 +213,7 @@ def initializeNormalizedTable():
 		) ENGINE=InnoDB;
 	""")
 	
+	if (verbose) : print ("[INFO] - Creating TABLE status_type ")
 	cursor.execute("""
 		CREATE TABLE status_type (
 			id_Status varchar(5) NOT NULL,
@@ -216,7 +221,8 @@ def initializeNormalizedTable():
 			CONSTRAINT pk_id_Status PRIMARY KEY(id_Status)
 		) ENGINE=InnoDB;
 	""")
-	
+
+	if (verbose) : print ("[INFO] - Creating TABLE descent_typeDescend_type ")	
 	cursor.execute("""
 		CREATE TABLE descent_type (
 			id_Descent varchar(1) NOT NULL,
@@ -225,6 +231,7 @@ def initializeNormalizedTable():
 		) ENGINE=InnoDB;
 	""")
 	
+	if (verbose) : print ("[INFO] - Creating TABLE crime")
 	cursor.execute("""
 		CREATE TABLE crime (
 			id_crime varchar(9),
@@ -286,15 +293,15 @@ def importDescent(row):
 	cursor.execute(query)
 	
 def extractWeapon(): 
-	print ("[INFO] - Extracting Weapons from t_crime ")
+	if (verbose) : print ("[INFO] - Extracting Weapons from t_crime ")
 	cursor.execute("""
 			  INSERT INTO weapon_type(id_Weapon,weapon_Description) 
 			  SELECT Distinct Weapon_Used_Code, Weapon_Description
 				  FROM t_crime_import;
-			""")  
+			""")
 
 def extractPremise(): 
-	print ("[INFO] - Extracting Premise from t_crime ")
+	if (verbose) : print ("[INFO] - Extracting Premise from t_crime ")
 	cursor.execute("""
 			  INSERT INTO premise_type(id_Premise,premise_Description) 
 			  SELECT Distinct Premise_Code,Premise_Description
@@ -302,7 +309,7 @@ def extractPremise():
 			""")  
 
 def extractArea() :
-	print ("[INFO] - Extracting Area from t_crime ")
+	if (verbose) : print ("[INFO] - Extracting Area from t_crime ")
 	cursor.execute("""
 			  INSERT INTO area(id_area,area_Name) 
 			  SELECT Distinct Area_ID,Area_Name
@@ -310,8 +317,7 @@ def extractArea() :
 			""")  
 
 def extractCrime() :
-	print ("[INFO] - Extracting Crime_type from t_crime ")
-	print ("[INFO] - Extracting Crime_type from t_crime ")
+	if (verbose) : print ("[INFO] - Extracting Crime_type from t_crime ")
 	
 	cursor.execute("""
 			  INSERT INTO crime_type(id_Crime,crime_Code_Description) 
@@ -320,7 +326,7 @@ def extractCrime() :
 			""")  		
 
 def importCrimeFact() : 
-	print ("[INFO] - Normalise declaration from t_crime_import ")	
+	if (verbose) : print ("[INFO] - Normalise declaration from t_crime_import ")	
 	cursor.execute("""
 			  INSERT INTO crime (
 							id_crime,
