@@ -169,7 +169,7 @@ def importUnemployementRate(row):
 	if (verbose) : print ("[INFO] - Inserting import data into TABLE unemployement_LA : "+ row["month"])  	
 	if (debug): print(row)
 	
-	query = "INSERT INTO unemployement_LA (year,month,unemployement_rate) VALUES (%s,'%s',%s)" % (row['year'], row['month'], row['unemployement_rate'][:-1]) 
+	query = "INSERT INTO unemployement_LA (year,month,unemployement_rate) VALUES (%s,'%s',%s)" % (row['year'], row['month'], float(row['unemployement_rate'][:-1])) 
 	if (debug): print("[INFO] - " + query)
 	cursor.execute(query)
 
@@ -199,7 +199,7 @@ def initializeUnemployementLA():
 	CREATE TABLE IF NOT EXISTS unemployement_LA (
 		year varchar(4),
 		month varchar(12),
-		unemployement_Rate int(10)
+		unemployement_Rate DECIMAL(4,2)
 	) ENGINE=InnoDB ;	
 	""")
 
