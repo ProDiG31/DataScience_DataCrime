@@ -1,7 +1,8 @@
 
-<b> Projet DataScience :</b> DataCrime <br>
+<b> Projet DataScience :</b> DataCrime
+
 <b> Groupe de travail : </b>
-- <b>Yann SIMON</b>
+- <b>Yann SIMON</b> (Chef de Projet)
 - Romain DUCROS
 - Alexandre QUENTIN
 - Rémi SAULNERON
@@ -12,6 +13,18 @@
  setup :
 
  Install python
+
+ <b> install python mysql-connector </b>
+> pip install mysql-connector
+
+ <b> install plotly </b>
+> pip install plotly
+> pip install plotly --upgrade
+> pip install scipy
+> pip install numpy
+> pip install python-dotenv
+
+
 
 create folder where you want install greenplace
 open cmd
@@ -26,12 +39,12 @@ git clone greenplace repositories
  - [ ] Crimes / Ethnie
  - [ ] Crimes / Saison
 
-Sources:
+<b>Sources:</b>
 Los Angeles Population
-https://fred.stlouisfed.org/series/CALOSA7POP
+>https://fred.stlouisfed.org/series/CALOSA7POP
 
 Unemployement_rate_LA.csv
-https://fred.stlouisfed.org/series/CALOSA7URN
+>https://fred.stlouisfed.org/series/CALOSA7URN
 
 SingleParentRate.csv
-https://fred.stlouisfed.org/series/S1101SPHOUSE006037
+>https://fred.stlouisfed.org/series/S1101SPHOUSE006037
