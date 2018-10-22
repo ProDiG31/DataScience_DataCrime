@@ -74,7 +74,7 @@ def initializeTableImport(cursor):
 	) ENGINE=InnoDB ;
 	""")
 
-def ImportRowInTempTable(cursor,row):
+def ImportRowInTempTable(query,row):
 	if (verbose) :print ("[INFO] - Inserting Or Updating Raw into TABLE t_crime_import : "+ row["DR Number"])
 	if (debug): print(row)
 
@@ -84,47 +84,34 @@ def ImportRowInTempTable(cursor,row):
 
 	if (row['Victim Age'] != '') : victim_age = int(row['Victim Age'])
 	if (row['Weapon Used Code'] != '') : weapon_Used_code = int(row['Weapon Used Code'])
-	if(row['Premise Code'] != '') : premise_Code = int(row['Premise Code'])
+	if (row['Premise Code'] != '') : premise_Code = int(row['Premise Code'])
 
-	cursor.execute("""
-	 INSERT IGNORE INTO t_crime_import (
-	 	DR_Number,
-		date_reported,
-		date_occurred,
-		time_occurred,
-		id_area,
-		area_name,
-		reporting_district,
-		crime_code,
-		crime_code_description,
-		MO_codes,
-		victim_age,
-		victim_sex,
-		victim_descent,
-		premise_code,
-		premise_description,
-		weapon_used_code,
-		weapon_description,
-		status_code,
-		status_description,
-		crime_code_1,
-		crime_code_2,
-		crime_code_3,
-		crime_code_4,
-		address,
-		cross_street,
-		location
-		)
-	  VALUES (%s, STR_TO_DATE(%s, '%m/%d/%Y'), STR_TO_DATE(%s, '%m/%d/%Y'), %s, %s,
-		    %s, %s, %s, %s, %s,
-		    %s, %s, %s, %s, %s,
-		    %s, %s, %s, %s, %s,
-			%s, %s, %s, %s, %s,
-			%s)
-	""", (
+	# print("LOCATION 1 =")
+	# print (row['Location'])
+	# # print (row['Location'].get(0))
+
+	# # location = '%.5f , %.5f' % (row['Location'][0], row['Location'][1] )
+
+	# print("LOCATION 2 =")
+	# print()
+	# location =  ''
+	#  str(row['Location'][1:-1])
+
+	# for x in row['Location']:
+	# 	print (x)
+	dateFormat = '%m/%d/%Y'
+	dateReport = 'STR_TO_DATE(%s,%s)' % (row["Date Reported"], dateFormat)
+	dateOccur = 'STR_TO_DATE(%s,%s)' % (row["Date Occurred"], dateFormat)
+
+	query += ("""
+		   ('%s', '%s', '%s', '%s', '%s',
+		    '%s', '%s', '%s', '%s', '%s',
+		    '%s', '%s', '%s', '%s', '%s',
+		    '%s', '%s', '%s', '%s', '%s',
+			'%s', '%s', '%s', '%s', '%s', '%s'),""" % (
 		row["DR Number"],
-		row["Date Reported"],
-		row["Date Occurred"],
+		dateReport,
+		dateOccur,
 		row["Time Occurred"],
 		int(row["Area ID"]),
 		row['Area Name'],
@@ -148,8 +135,9 @@ def ImportRowInTempTable(cursor,row):
 		row['Address'],
 		row['Cross Street'],
 		row['Location']
+		)
 	)
-)
+	return query
 
 def importDemographieLA(cursor,row):
 	if (verbose) : print ("[INFO] - Inserting import data into TABLE demographie_LA : "+ row["Year"])
@@ -449,8 +437,8 @@ def deployDatabase(database):
 	conn.commit()
 
 	# ---- Read Cleared data imported from US Open Data
-	# filename = '../source/CrimeDataLight2.csv'
-	filename = '../source/Crime_Data_from_2010_to_Present.csv'
+	filename = '../source/CrimeDataLight2.csv'
+	# filename = '../source/Crime_Data_from_2010_to_Present.csv'
 	print ('[INFO] - Counting Row ')
 	totalrows =  len(open(filename).readlines()) - 1
 
@@ -460,17 +448,57 @@ def deployDatabase(database):
 		reader = csv.DictReader(csvfile, delimiter=',' , lineterminator ='\n')
 		rowNumber = 0
 		print ('[INFO] - line %d: %s' % (rowNumber, totalrows))
+		select = ("""
+			INSERT IGNORE INTO t_crime_import (
+				DR_Number,
+				date_reported,
+				date_occurred,
+				time_occurred,
+				id_area,
+				area_name,
+				reporting_district,
+				crime_code,
+				crime_code_description,
+				MO_codes,
+				victim_age,
+				victim_sex,
+				victim_descent,
+				premise_code,
+				premise_description,
+				weapon_used_code,
+				weapon_description,
+				status_code,
+				status_description,
+				crime_code_1,
+				crime_code_2,
+				crime_code_3,
+				crime_code_4,
+				address,
+				cross_street,
+				location
+				)
+			VALUES
+		""")
+
+		query = select
 		for row in reader:
 			# ---- Import each row into Mysql Database
-			ImportRowInTempTable(cursor,row)
+			query = ImportRowInTempTable(query,row)
 			rowNumber += 1
-			print ('[INFO] - line %d	: %s	- Progressing :	%.3f %%		- Elapsed time : %.2f sec' %
+			print ('[INFO] - line %d : %s	- Progressing :	%.3f %%		- Elapsed time : %.2f sec 	- Rate : %.2f ' %
 							(rowNumber,
 							 totalrows,
 							 rowNumber * 100 / totalrows,
-							 time.time() - t0))
+							 time.time() - t0,
+							 (time.time() - t0) / rowNumber))
+			if (rowNumber % 10 == 0):
+				print (rowNumber)
+				print('Elapsed time : %.2f sec' % (time.time() - t0))
+				query = query[:-1] # Replacing last ','
+				print (query)
+				cursor.execute(query + ';')
+				query = select
 
-	print('Elapsed time : %.2f sec' % (time.time() - t0))
 	conn.commit()
 	input('jjgj')
 	# ---- create normalized tables
