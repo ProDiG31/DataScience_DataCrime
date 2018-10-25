@@ -39,6 +39,14 @@ git clone greenplace repositories
  - [ ] Crimes / Ethnie
  - [ ] Crimes / Saison
 
+
+<b>Analysis BRUTE :</b>
+
+A faire sur Année / Saison (Trimestres)
+Arme la plus utilisé de l'année
+Victime la plus probable
+Lieu le plus dangereux
+
 <b>Sources:</b>
 Los Angeles Population
 >https://fred.stlouisfed.org/series/CALOSA7POP
