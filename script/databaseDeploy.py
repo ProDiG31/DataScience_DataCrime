@@ -40,6 +40,8 @@ def clearDb(cursor):
 	cursor.execute("DROP TABLE IF EXISTS demographie_LA;")
 	cursor.execute("DROP TABLE IF EXISTS unemployement_LA;")
 	cursor.execute("DROP TABLE IF EXISTS single_parent_rate;")
+	cursor.execute("DROP TABLE IF EXISTS police_budgets;")
+
 
 def clearTable(cursor):
 	print ("[INFO] - Dropping Previous Tables")
@@ -287,6 +289,15 @@ def initializeNormalizedTable(cursor):
 			location varchar(100),
 			CONSTRAINT pk_id_crime PRIMARY KEY (id_crime)
 		) ENGINE=InnoDB;
+	""")
+
+	cursor.execute("""
+		CREATE TABLE police_budgets (
+			id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			year_budget SMALLINT UNSIGNED,
+			police_budget INT(12) UNSIGNED,
+			CONSTRAINT pk_id_police_budget PRIMARY KEY (id)
+		)
 	""")
 
 #			CONSTRAINT fk_id_Area FOREIGN KEY (Area_ID) REFERENCES area(id_area),
