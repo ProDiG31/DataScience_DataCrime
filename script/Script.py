@@ -13,6 +13,8 @@ else: print("[INFO] - Deploy skipped")
 
 import plotlySetting
 
-from chart2 import deployChart
+from chart import deployChart
+deployChart(db)
 
+from chart2 import deployChart
 deployChart(db)
