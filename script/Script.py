@@ -37,6 +37,7 @@ def clearDb():
 	cursor.execute("DROP TABLE IF EXISTS fullMoon;")
 	cursor.execute("DROP TABLE IF EXISTS demographie_LA;")
 	cursor.execute("DROP TABLE IF EXISTS unemployement_LA;")
+	cursor.execute("DROP TABLE IF EXISTS police_budgets;")
 
 def initializeTableImport():
 	print ("[INFO] - Creating TABLE %s" % table_import_temp)
@@ -310,6 +311,14 @@ def initializeNormalizedTable():
 			location varchar(100),
 			CONSTRAINT pk_id_crime PRIMARY KEY (id_crime)
 		) ENGINE=InnoDB;
+	""")
+
+	cursor.execute("""
+		CREATE TABLE police_budgets (
+			id UNSIGNED TINYINT NOT NULL AUTO_INCREMENT,
+			Police_Budget UNSIGNED INT(12),
+			CONSTRAINT pk_id_police_budget PRIMARY KEY (id)	
+		)
 	""")
 
 #			CONSTRAINT fk_id_Area FOREIGN KEY (Area_ID) REFERENCES area(id_area),
