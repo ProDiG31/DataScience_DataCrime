@@ -5,7 +5,6 @@ from databaseUtil import Database
 
 db = Database()
 
-
 isDeployed = input("[INFO] - Souhaitez vous deployer la base de donnée (Y/N) :")
 if(isDeployed == "Y"):
 	from databaseDeploy import deployDatabase
