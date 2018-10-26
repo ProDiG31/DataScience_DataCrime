@@ -31,6 +31,14 @@ open cmd
 git clone greenplace repositories
 > git clone https://github.com/ProDiG31/DataScience_DataCrime.git
 
+
+<b> TO do :</b>
+
+    - extract Status type
+    - import crime type gravity
+    - map chart
+
+
 <b>Analysis Ideas :</b>
 
  - [ ] Crimes / Plein Lune
@@ -39,6 +47,7 @@ git clone greenplace repositories
  - [ ] Crimes / Ethnie
  - [ ] Crimes / Saison
 
+heath map (axeY=année, axeX=catégorie/gravité, valeur= nombre de crime)
 
 <b>Analysis BRUTE :</b>
 

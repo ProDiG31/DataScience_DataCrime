@@ -223,6 +223,8 @@ def initializeNormalizedTable(cursor):
 		CREATE TABLE crime_type (
 			id_crime int(3) NOT NULL,
 			crime_code_Description varchar(100) NOT NULL,
+			category varchar(100) NOT NULL,
+			gravity varchar(100) NOT NULL,
 			CONSTRAINT pk_id_Crime PRIMARY KEY(id_crime)
 		) ENGINE=InnoDB;
 	""")
@@ -326,6 +328,21 @@ def importDescent(cursor,row):
 	if (debug) : print (query)
 	cursor.execute(query)
 
+# def importWeapon(cursor,row):
+# 	if (verbose) : print ("[INFO] - Importing Weapons : "+ row['weapons_code'])
+# 	if (debug) : print (row)
+
+# 	query = """INSERT INTO weapon_type(id_weapon,weapon_description,category,gravity)
+# 				VALUES (%s, '%s', '%s', '%s')""" % (
+# 							row['weapons_code'],
+# 							row['weapon_description'],
+# 							row['Category'],
+# 							row['gravity']
+# 							)
+
+# 	if (debug) : print (query)
+# 	cursor.execute(query)
+
 def extractWeapon(cursor):
 	if (verbose) : print ("[INFO] - Extracting Weapons from t_crime ")
 	cursor.execute("""
@@ -352,16 +369,19 @@ def extractArea(cursor) :
 				  FROM t_crime_import;
 			""")
 
-def extractCrime(cursor) :
-	if (verbose) : print ("[INFO] - Extracting Crime_type from t_crime ")
-	cursor.execute("""
-			  INSERT INTO crime_type(id_crime,crime_code_description)
-			  SELECT Distinct crime_code,crime_code_description
-					FROM t_crime_import
-					where crime_code_Description != ''
-					group by crime_code
-					order by crime_code;
-			""")
+def importCrimeType(cursor,row):
+	if (verbose) : print ("[INFO] - Importing Weapons : "+ row['id_crime'])
+	if (debug) : print (row)
+	query = """INSERT INTO crime_type(id_crime,crime_code_description,category,gravity)
+				VALUES (%s, '%s', '%s', '%s')""" % (
+							row['id_crime'],
+							row['crime_code_description'],
+							row['category'],
+							row['gravity']
+							)
+
+	if (debug) : print (query)
+	cursor.execute(query)
 
 def importCrimeFact(cursor) :
 	if (verbose) : print ("[INFO] - Normalise declaration from t_crime_import ")
@@ -545,7 +565,15 @@ def deployDatabase(database):
 	extractArea(cursor)
 	extractWeapon(cursor)
 	extractPremise(cursor)
-	extractCrime(cursor)
+	# extractCrimeType(cursor)
+	conn.commit()
+
+	# ---- fill Crime code type data from Crime_code_gravity.csv
+	csvLink = '../source/Crime_code_gravity.csv'
+	with open(csvLink) as csvLinkRead :
+		reader = csv.DictReader(csvLinkRead, delimiter = ',', lineterminator = '\r')
+		for row in reader:
+			importCrimeType(cursor,row)
 	conn.commit()
 
 	# ---- fill Mo Codes data from mo_code.csv

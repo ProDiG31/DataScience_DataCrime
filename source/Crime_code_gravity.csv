@@ -1,4 +1,4 @@
-Column1,Column2,Category,gravité
+id_crime,crime_code_description,category,gravity
 110,CRIMINAL HOMICIDE,Personnal,Felony
 113,"MANSLAUGHTER, NEGLIGENT",Personnal,Felony
 121,"RAPE, FORCIBLE",Personnal,Felony
