@@ -46,6 +46,9 @@ A faire sur Année / Saison (Trimestres)
 Arme la plus utilisé de l'année
 Victime la plus probable
 Lieu le plus dangereux
+Rape, Robbery, murder, Assault
+Nombre de delit par ans
+
 
 <b>Sources:</b>
 Los Angeles Population

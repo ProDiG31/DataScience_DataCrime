@@ -28,7 +28,6 @@ def useDb(cursor):
 
 def clearDb(cursor):
 	print ("[INFO] - Dropping Previous Tables")
-	cursor.execute("DROP TABLE IF EXISTS %s;" % table_import_temp)
 	cursor.execute("DROP TABLE IF EXISTS crime;")
 	cursor.execute("DROP TABLE IF EXISTS area;")
 	cursor.execute("DROP TABLE IF EXISTS weapon_type;")
@@ -37,10 +36,14 @@ def clearDb(cursor):
 	cursor.execute("DROP TABLE IF EXISTS modus_operandi_type;")
 	cursor.execute("DROP TABLE IF EXISTS status_type;")
 	cursor.execute("DROP TABLE IF EXISTS descent_type;")
-	cursor.execute("DROP TABLE IF EXISTS fullMoon;")
+	cursor.execute("DROP TABLE IF EXISTS fullmoon;")
 	cursor.execute("DROP TABLE IF EXISTS demographie_LA;")
 	cursor.execute("DROP TABLE IF EXISTS unemployement_LA;")
 	cursor.execute("DROP TABLE IF EXISTS single_parent_rate;")
+
+def clearTable(cursor):
+	print ("[INFO] - Dropping Previous Tables")
+	cursor.execute("DROP TABLE IF EXISTS %s;" % table_import_temp)
 
 def initializeTableImport(cursor):
 	print ("[INFO] - Creating TABLE %s" % table_import_temp)
@@ -397,33 +400,7 @@ def importCrimeFact(cursor) :
 		          FROM t_crime_import;
 		""")
 
-# def defineDatabase(Database database):
-
-def deployDatabase(database):
-	# -------- SCRIPT BEGINS HERE AND WILL EXECUTE FUNCTIONS DECLARED ABOVE
-	# ---- Connection to Mysql Server
-	conn = database
-
-	# ---- Init Mysql Cursor
-	cursor = conn.cursor
-
-	# ---- Creating database
-	initializeDatabase(cursor)
-	conn.commit()
-
-	# ---- Select Database
-	useDb(cursor)
-
-	# ---- Clear Database
-	clearDb(cursor)
-	conn.commit()
-
-	# ---- Create Temp Table for inline Import
-	initializeTableImport(cursor)
-
-	# ---- commit Changes into DataBase
-	conn.commit()
-
+def importTempTable(cursor):
 	# ---- Read Cleared data imported from US Open Data
 	# filename = '../source/CrimeDataLight.csv'
 	# filename = '../source/CrimeDataLight2.csv'
@@ -492,7 +469,7 @@ def deployDatabase(database):
 							 timeLeftString,
 							 rate
 							 ))
-			if ((rowNumber % 10 == 0) or (rowNumber == totalrows)):
+			if ((rowNumber % 20 == 0) or (rowNumber == totalrows)):
 				# print (rowNumber)
 				query = query[:-1] # Replacing last ','
 				query += ";"
@@ -500,8 +477,49 @@ def deployDatabase(database):
 				cursor.execute(query)
 				query = insert
 
-	print('Elapsed time : %.2f sec' % (time.time() - t0))
+	print('[INFO] - Elapsed time : %.2f sec' % (time.time() - t0))
+
+# def defineDatabase(Database database):
+
+def deployDatabase(database):
+	# -------- SCRIPT BEGINS HERE AND WILL EXECUTE FUNCTIONS DECLARED ABOVE
+	# ---- Connection to Mysql Server
+	conn = database
+
+	# ---- Init Mysql Cursor
+	cursor = conn.cursor
+
+	# ---- Creating database
+	initializeDatabase(cursor)
 	conn.commit()
+
+	# ---- Select Database
+	useDb(cursor)
+
+	# ---- Clear Database
+	clearDb(cursor)
+	conn.commit()
+
+	# ---- Ask to import temp data
+	isDeployed = input("[INFO] - Souhaitez vous importer les données temporaire dans la base de donnée (Y/N) :")
+	if(isDeployed == "Y"):
+
+		# ---- Drop Temp Table
+		clearTable(cursor)
+
+		# ---- Create Temp Table for inline Import
+		initializeTableImport(cursor)
+
+		# ---- commit Changes into DataBase
+		conn.commit()
+
+		importTempTable(cursor)
+		t0 = time.time()
+		print('[INFO] - Commiting request into database')
+		conn.commit()
+		print('[INFO] - Elapsed time : %.2f sec' % (time.time() - t0))
+
+	else: print("[INFO] - Import skipped")
 
 	# ---- create normalized tables
 	initializeNormalizedTable(cursor)
