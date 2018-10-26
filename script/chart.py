@@ -33,7 +33,8 @@ def drawChart(cursor):
 				count(weapon_used_code) AS counter
         FROM db_datacrime.crime
         group by weapon_used_code,YEAR(date_occurred)
-        having weapon_type != '';
+        having weapon_type != ''
+        order by YEAR(date_occurred);
     """)
 
     print ("[INFO] - Data Received ")

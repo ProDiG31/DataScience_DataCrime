@@ -48,6 +48,13 @@ Victime la plus probable
 Lieu le plus dangereux
 Rape, Robbery, murder, Assault
 Nombre de delit par ans
+% crime par category
+
+crime by category :
+    Personnal crime
+    Property Crime
+    Inchoate Crime (crime incomplet)
+    Statutory crime
 
 
 <b>Sources:</b>

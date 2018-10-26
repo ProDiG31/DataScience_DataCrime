@@ -47,6 +47,7 @@ def establishConnection():
 	defaultHost = str(os.getenv("defaultHost"))
 	defaultPassword = str(os.getenv("defaultPassword"))
 	databaseName = str(os.getenv("databaseName"))
+    portName = str(os.getenv("databasePort"))
 
 	inputHost 		= input("[INFO] - Veuillez saisir l' host de la base de donnée (default = "+ defaultHost +") : ")
 	inputUser 		= input("[INFO] - Veuillez saisir l' identifiant de connexion à la base de donnée (default = "+ defaultUser +") : ")
@@ -56,7 +57,7 @@ def establishConnection():
 	if len(inputUser) == 0 : 		inputUser = defaultUser
 	if len(inputPassword) == 0 : 	inputPassword = defaultPassword
 
-	return mysql.connector.connect(host=inputHost,user=inputUser,password=inputPassword, database=databaseName)
+	return mysql.connector.connect(host=inputHost,user=inputUser,password=inputPassword, database=databaseName,port=portName)
 
 # 	conn = establishConnection()
 

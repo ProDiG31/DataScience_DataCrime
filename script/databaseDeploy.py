@@ -357,7 +357,10 @@ def extractCrime(cursor) :
 	cursor.execute("""
 			  INSERT INTO crime_type(id_crime,crime_code_description)
 			  SELECT Distinct crime_code,crime_code_description
-				  FROM t_crime_import;
+					FROM t_crime_import
+					where crime_code_Description != ''
+					group by crime_code
+					order by crime_code;
 			""")
 
 def importCrimeFact(cursor) :
