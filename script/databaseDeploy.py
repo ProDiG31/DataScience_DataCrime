@@ -145,6 +145,15 @@ def importFullMoonData(cursor,row):
 	if (debug): print("[INFO] - " + query)
 	cursor.execute(query)
 
+def importPoliceBudgetPerYear(cursor, row):
+	if (verbose) : print ("[INFO] - Importing PoliceBudget Value ")
+	if (debug) : print (row)
+ 	year = row['year']
+	budget = row['budget']
+ 	query = "INSERT INTO police_budgets (year_budget, police_budget) VALUES (\"%s\", \"%s\")" % (year, budget)
+ 	if (debug) : print (query)
+	cursor.execute(query)
+
 def importUnemployementRate(cursor,row):
 	if (verbose) : print ("[INFO] - Inserting import data into TABLE unemployement_LA : "+ row["date"])
 	if (debug): print(row)
@@ -629,4 +638,11 @@ def deployDatabase(database):
 		reader = csv.DictReader(csvLinkRead, delimiter = ',')
 		for row in reader:
 			importSingleParentRate(cursor,row)
+	conn.commit()
+
+	csvLink = '../source/police_budget.csv'
+	with open(csvLink) as csvLinkRead :
+		reader = csv.DictReader(csvLinkRead, delimiter = ',')
+		for row in reader:
+			importPoliceBudgetPerYear(cursor, row)
 	conn.commit()
