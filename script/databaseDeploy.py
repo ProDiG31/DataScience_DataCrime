@@ -28,7 +28,7 @@ def useDb(cursor):
 
 def clearDb(cursor):
 	print ("[INFO] - Dropping Previous Tables")
-	# cursor.execute("DROP TABLE IF EXISTS %s;" % table_import_temp)
+	cursor.execute("DROP TABLE IF EXISTS %s;" % table_import_temp)
 	cursor.execute("DROP TABLE IF EXISTS crime;")
 	cursor.execute("DROP TABLE IF EXISTS area;")
 	cursor.execute("DROP TABLE IF EXISTS weapon_type;")
@@ -425,9 +425,9 @@ def deployDatabase(database):
 	conn.commit()
 
 	# ---- Read Cleared data imported from US Open Data
-	filename = '../source/CrimeDataLight.csv'
+	# filename = '../source/CrimeDataLight.csv'
 	# filename = '../source/CrimeDataLight2.csv'
-	# filename = '../source/Crime_Data_from_2010_to_Present.csv'
+	filename = '../source/Crime_Data_from_2010_to_Present.csv'
 	print ('[INFO] - Counting Row ')
 	totalrows =  len(open(filename).readlines()) - 1
 	t0 = time.time()
@@ -499,9 +499,9 @@ def deployDatabase(database):
 				# print (query)
 				cursor.execute(query)
 				query = insert
-				conn.commit()
 
 	print('Elapsed time : %.2f sec' % (time.time() - t0))
+	conn.commit()
 
 	# ---- create normalized tables
 	initializeNormalizedTable(cursor)
