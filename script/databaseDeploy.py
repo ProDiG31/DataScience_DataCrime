@@ -89,10 +89,12 @@ def ImportRowInTempTable(query,row):
 	if (row['Premise Code'] != '') : premise_Code = int(row['Premise Code'])
 
 	dateFormat = '%m/%d/%Y'
-	dateReport = 'STR_TO_DATE(%s,\'%s\')' % (row["Date Reported"], dateFormat)
-	dateOccur = 'STR_TO_DATE(%s,\'%s\')' % (row["Date Occurred"], dateFormat)
+	dateReport = "STR_TO_DATE('%s','%s')" % (row["Date Reported"], dateFormat)
+	dateOccur = "STR_TO_DATE('%s','%s')" % (row["Date Occurred"], dateFormat)
 
-	query += ("""(%s, %s, %s, %s, %s,'%s', %s, %s, "%s", "%s",%s, "%s", "%s", %s, "%s",%s, "%s", "%s", "%s", %s,"%s", "%s", "%s", "%s", "%s", "%s"),""" % (
+	# print (dateReport)
+	# input ('he')
+	query += ("""(%s, %s, %s, %s, %s,'%s', %s, %s, "%s", "%s",%s, "%s", "%s", %s, "%s", %s, "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"),""" % (
 		row["DR Number"],
 		dateReport,
 		dateOccur,
@@ -420,8 +422,9 @@ def deployDatabase(database):
 	conn.commit()
 
 	# ---- Read Cleared data imported from US Open Data
-	filename = '../source/CrimeDataLight2.csv'
-	# filename = '../source/Crime_Data_from_2010_to_Present.csv'
+	# filename = '../source/CrimeDataLight.csv'
+	# filename = '../source/CrimeDataLight2.csv'
+	filename = '../source/Crime_Data_from_2010_to_Present.csv'
 	print ('[INFO] - Counting Row ')
 	totalrows =  len(open(filename).readlines()) - 1
 
@@ -467,10 +470,15 @@ def deployDatabase(database):
 		for row in reader:
 			# ---- Import each row into Mysql Database
 			query = ImportRowInTempTable(query,row)
+
+			# ---- Log current activities
 			rowNumber += 1
 			percent = rowNumber * 100 / totalrows
 			elapsedTime = time.time() - t0
-			rate = rowNumber // elapsedTime
+			try:
+				rate = rowNumber // elapsedTime
+			except ZeroDivisionError:
+				rate = 1
 			timeLeftSec = abs((rowNumber - totalrows) / rate)
 			timeLeftString = str(datetime.timedelta(seconds=timeLeftSec))
 			print ('[INFO] - line %d : %s	- Progressing :	%.3f%%	- Elapsed time : %.2f sec (%s) - Rate : %.2f input/Sec' %
@@ -481,7 +489,7 @@ def deployDatabase(database):
 							 timeLeftString,
 							 rate
 							 ))
-			if (rowNumber % 10 == 0):
+			if ((rowNumber % 10 == 0) or (rowNumber == totalrows)):
 				# print (rowNumber)
 				query = query[:-1] # Replacing last ','
 				query += ";"
