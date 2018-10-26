@@ -26,13 +26,14 @@ def drawChart(cursor):
 
     cursor.execute("""
         SELECT
-            distinct YEAR(date_occurred) as years,
+				DISTINCT YEAR(date_occurred) AS years,
                 (SELECT weapon_Description
                 FROM weapon_type
-                WHERE Weapon_Used_Code = id_Weapon) as weapon_type,
-            count(weapon_used_code) as counter
+                WHERE Weapon_Used_Code = id_Weapon) AS weapon_type,
+				count(weapon_used_code) AS counter
         FROM db_datacrime.crime
-        group by weapon_used_code,YEAR(date_occurred);
+        group by weapon_used_code,YEAR(date_occurred)
+        having weapon_type != '';
     """)
 
     print ("[INFO] - Data Received ")
