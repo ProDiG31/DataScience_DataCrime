@@ -148,10 +148,10 @@ def importFullMoonData(cursor,row):
 def importPoliceBudgetPerYear(cursor, row):
 	if (verbose) : print ("[INFO] - Importing PoliceBudget Value ")
 	if (debug) : print (row)
- 	year = row['year']
+	year = row['year']
 	budget = row['budget']
- 	query = "INSERT INTO police_budgets (year_budget, police_budget) VALUES (\"%s\", \"%s\")" % (year, budget)
- 	if (debug) : print (query)
+	query = "INSERT INTO police_budgets (year_budget, police_budget) VALUES (\"%s\", \"%s\")" % (year, budget)
+	if (debug) : print (query)
 	cursor.execute(query)
 
 def importUnemployementRate(cursor,row):
