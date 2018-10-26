@@ -40,6 +40,7 @@ def clearDb(cursor):
 	cursor.execute("DROP TABLE IF EXISTS fullMoon;")
 	cursor.execute("DROP TABLE IF EXISTS demographie_LA;")
 	cursor.execute("DROP TABLE IF EXISTS unemployement_LA;")
+	cursor.execute("DROP TABLE IF EXISTS single_parent_rate;")
 
 def initializeTableImport(cursor):
 	print ("[INFO] - Creating TABLE %s" % table_import_temp)
@@ -491,7 +492,6 @@ def deployDatabase(database):
 
 	print('Elapsed time : %.2f sec' % (time.time() - t0))
 	conn.commit()
-	input('jjgj')
 	# ---- create normalized tables
 	initializeNormalizedTable(cursor)
 
