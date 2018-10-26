@@ -34,7 +34,7 @@ def clearDb():
 	cursor.execute("DROP TABLE IF EXISTS modus_operandi_type;")
 	cursor.execute("DROP TABLE IF EXISTS status_type;")
 	cursor.execute("DROP TABLE IF EXISTS descent_type;")
-	cursor.execute("DROP TABLE IF EXISTS fullMoon;")
+	cursor.execute("DROP TABLE IF EXISTS fullmoon;")
 	cursor.execute("DROP TABLE IF EXISTS demographie_LA;")
 	cursor.execute("DROP TABLE IF EXISTS unemployement_LA;")
 	cursor.execute("DROP TABLE IF EXISTS police_budgets;")
@@ -315,9 +315,10 @@ def initializeNormalizedTable():
 
 	cursor.execute("""
 		CREATE TABLE police_budgets (
-			id UNSIGNED TINYINT NOT NULL AUTO_INCREMENT,
-			Police_Budget UNSIGNED INT(12),
-			CONSTRAINT pk_id_police_budget PRIMARY KEY (id)	
+			id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			year_budget SMALLINT UNSIGNED,
+			police_budget INT(12) UNSIGNED,
+			CONSTRAINT pk_id_police_budget PRIMARY KEY (id)
 		)
 	""")
 
@@ -353,6 +354,20 @@ def importDescent(row):
 
 	if (debug) : print (query)
 	cursor.execute(query)
+
+def importPoliceBudgetPerYear(row):
+	if (verbose) : print ("[INFO] - Importing PoliceBudget Value ")
+	if (debug) : print (row)
+
+	year = row['year']
+	budget = row['budget']
+
+	query = "INSERT INTO police_budgets (year_budget, police_budget) VALUES (\"%s\", \"%s\")" % (year, budget)
+
+	if (debug) : print (query)
+	cursor.execute(query)
+
+
 
 def extractWeapon():
 	if (verbose) : print ("[INFO] - Extracting Weapons from t_crime ")
@@ -560,4 +575,12 @@ with open(csvLink) as csvLinkRead :
 	reader = csv.DictReader(csvLinkRead, delimiter = ',')
 	for row in reader:
 		importSingleParentRate(row)
+conn.commit()
+
+
+csvLink = '../source/police_budget.csv'
+with open(csvLink) as csvLinkRead :
+	reader = csv.DictReader(csvLinkRead, delimiter = ',')
+	for row in reader:
+		importPoliceBudgetPerYear(row)
 conn.commit()
