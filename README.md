@@ -65,6 +65,7 @@ crime by category :
     Inchoate Crime (crime incomplet)
     Statutory crime
 
+Top 5 crime_code / année
 
 <b>Sources:</b>
 Los Angeles Population
