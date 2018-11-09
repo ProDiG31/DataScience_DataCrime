@@ -12,6 +12,9 @@ if(isDeployed == "Y"):
 else: print("[INFO] - Deploy skipped")
 
 import plotlySetting
-from chart import deployChart
 
+from chart import deployChart
+deployChart(db)
+
+from chart2 import deployChart
 deployChart(db)

@@ -2,27 +2,14 @@ import plotly.plotly as py
 import plotly.figure_factory as ff
 import numpy as np
 import plotly.graph_objs as go
-# import os
 
 # importing database class
 from databaseUtil import Database
 
 # -------- VARIABLES DECLARATION ZONE  ------------------
 
-# databaseName = os.getenv("databaseName")
-
 def drawChart(cursor):
     print ("[INFO] - Requesting data for Chart1")
-
-    # cursor.execute("""
-    #         SELECT count(Weapon_Used_Code) as countUse, (
-    #             SELECT weapon_Description
-    #             FROM weapon_type
-    #             WHERE Weapon_Used_Code = id_Weapon) as weapon_type
-    #         FROM db_datacrime.t_crime_import
-    #         group by Weapon_Used_Code
-    #         order by countUse desc;
-    #         """)
 
     cursor.execute("""
         SELECT weapon_description as weapon_type,

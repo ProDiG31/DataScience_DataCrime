@@ -231,7 +231,7 @@ def initializeNormalizedTable(cursor):
 	cursor.execute("""
 		CREATE TABLE crime_type (
 			id_crime int(3) NOT NULL,
-			crime_code_Description varchar(100) NOT NULL,
+			crime_code_description varchar(100) NOT NULL,
 			category varchar(100) NOT NULL,
 			gravity varchar(100) NOT NULL,
 			CONSTRAINT pk_id_Crime PRIMARY KEY(id_crime)
