@@ -22,16 +22,24 @@ def drawChart(cursor):
     #     having gravity != ''
     #     order by YEAR(date_occurred);
     # """)
+    # cursor.execute("""
+    #     SELECT DISTINCT YEAR(date_occurred) AS years,
+    #         (SELECT category
+    #         FROM crime_type
+    #         WHERE crime_code_1 = id_crime) AS category,
+    #         COUNT(crime_code_1) AS counter
+    #     FROM crime
+    #     group by category,YEAR(date_occurred)
+    #     having category != ''
+    #     order by YEAR(date_occurred)
+    # """)
+
     cursor.execute("""
-        SELECT DISTINCT YEAR(date_occurred) AS years,
-            (SELECT category
-            FROM crime_type
-            WHERE crime_code_1 = id_crime) AS category,
-            COUNT(crime_code_1) AS counter
-        FROM crime
-        group by category,YEAR(date_occurred)
-        having category != ''
-        order by YEAR(date_occurred)
+        SELECT YEAR(crime.date_occurred) as years, crime_type.category as category, COUNT(crime.id_crime) as counter FROM `crime` 
+        Inner Join crime_type on crime.crime_code=crime_type.id_crime
+        GROUP BY years, crime_type.category
+        ORDER BY years
+
     """)
 
     print ("[INFO] - Data Received ")
