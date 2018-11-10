@@ -47,6 +47,10 @@ def clearTable(cursor):
 	print ("[INFO] - Dropping Previous Tables")
 	cursor.execute("DROP TABLE IF EXISTS %s;" % table_import_temp)
 
+def configDB(cursor): 
+	print ("[INFO] - Configuring database sql_mode")
+	cursor.execute("SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';")
+
 def initializeTableImport(cursor):
 	print ("[INFO] - Creating TABLE %s" % table_import_temp)
 	cursor.execute("""
@@ -362,7 +366,7 @@ def extractWeapon(cursor):
 def extractPremise(cursor):
 	if (verbose) : print ("[INFO] - Extracting Premise from t_crime ")
 	cursor.execute("""
-			  INSERT INTO premise_type(id_premise,premise_description)
+			  INSERT INTO premise_type(id_premise,premise_description) ON DUPLICATE KEY UPDATE
 			  SELECT Distinct premise_code,premise_description
 				FROM t_crime_import
 				where premise_description != ''
@@ -552,6 +556,9 @@ def deployDatabase(database):
 
 		# ---- Create Temp Table for inline Import
 		initializeTableImport(cursor)
+
+		# ----- Configuring SQL_MODE
+		configDB(cursor)
 
 		# ---- commit Changes into DataBase
 		conn.commit()
