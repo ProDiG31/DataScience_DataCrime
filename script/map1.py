@@ -9,46 +9,64 @@ def drawMap(cursor):
     print ("[INFO] - Requesting data for Map1")
 
     cursor.execute("""
-        SELECT  id_crime,
-                YEAR(date_reported) as yearz,
-                location
-        FROM db_datacrime.crime
-        WHERE YEAR(date_reported) = 2015;
-    """)
+        SELECT
+            crime_type.gravity as gravity,
+            YEAR(crime.date_occurred) as years,
+            location
+        FROM crime
+        Inner Join crime_type on crime.crime_code=crime_type.id_crime
+        HAVING years = 2015
+        ORDER BY years; """)
 
     print ("[INFO] - Data Received ")
 
-    dataLon = []
-    dataLat = []
-    dataLab = []
+    dataLonFel = []
+    dataLatFel = []
+    dataLabFel = []
 
-    for (id_crime, yearz, location ) in cursor:
+    dataLonMis = []
+    dataLatMis = []
+    dataLabMis = []
+
+    for (gravity, years, location) in cursor:
+        # Misdemeanor
+        # Felony
 
         locationStr = location.replace('(','').replace(')','').split(',')
-        dataLat.append(locationStr[0])
-        dataLon.append(locationStr[1])
-        dataLab.append(str(str(id_crime) + ' - ' + str(yearz)))
-        # input("wait")
-        # dataSet.append({
-        #     "type": "Feature",
-        #     "geometry": {
-        #         "type": "Point",
-        #         "coordinates": str(locationStr).replace('\'','')
-        #     },
-        #     "properties": {
-        #         "name": str(str(id_crime) + ' - ' + str(yearz))
-        #     }
-        # })
+        if (gravity == "Misdemeanor"):
+            dataLatMis.append(locationStr[0])
+            dataLonMis.append(locationStr[1])
+            dataLabMis.append(str(gravity + ' - ' + str(years)))
+        elif(gravity == "Felony"):
+            dataLatFel.append(locationStr[0])
+            dataLonFel.append(locationStr[1])
+            dataLabFel.append(str(gravity + ' - ' + str(years)))
+
+    # print(dataLabFel)
+    # print(dataLabMis)
 
     data = graph_objs.Data([
         graph_objs.Scattermapbox(
-            lat=dataLat,
-            lon=dataLon,
+            lat=dataLatMis,
+            lon=dataLonMis,
             mode='markers',
             marker=dict(
-                size=9
+                size=9,
+                color='rgb(255, 0, 0)',
+                opacity=0.7
             ),
-            text=dataLab
+            text=dataLabMis
+        ),
+         graph_objs.Scattermapbox(
+            lat=dataLatFel,
+            lon=dataLonFel,
+            mode='markers',
+            marker=dict(
+                size=9,
+                color='rgb(0, 255, 0)',
+                opacity=0.7
+            ),
+            text=dataLabFel
         )
     ])
     layout = graph_objs.Layout(
@@ -56,23 +74,6 @@ def drawMap(cursor):
         autosize=True,
         hovermode='closest',
         mapbox=dict(
-            # layers=[
-            #     dict(
-            #         # sourcetype = 'geojson',
-            #         # source = dataSet,
-            #         # type = 'fill',
-            #         # color = 'rgba(163,22,19,0.8)'
-            #          lat=38.92,
-            #          lon=-77.07
-            #     )
-                # ,
-                # dict(
-                #     sourcetype = 'geojson',
-                #     source = 'https://raw.githubusercontent.com/plotly/datasets/master/florida-blue-data.json',
-                #     type = 'fill',
-                #     color = 'rgba(40,0,113,0.8)'
-                # )
-            # ],
             accesstoken=mapbox_access_token,
             bearing=0,
             center=dict(
