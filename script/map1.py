@@ -16,7 +16,8 @@ def drawMap(cursor):
         FROM crime
         Inner Join crime_type on crime.crime_code=crime_type.id_crime
         HAVING years = 2015
-        ORDER BY years; """)
+        ORDER BY years
+        LIMIT 1000; """)
 
     print ("[INFO] - Data Received ")
 
@@ -45,32 +46,37 @@ def drawMap(cursor):
     # print(dataLabFel)
     # print(dataLabMis)
 
-    data = graph_objs.Data([
-        graph_objs.Scattermapbox(
+    dataMis = graph_objs.Scattermapbox(
             lat=dataLatMis,
             lon=dataLonMis,
             mode='markers',
-            marker=dict(
-                size=9,
-                color='rgb(255, 0, 0)',
-                opacity=0.7
-            ),
-            text=dataLabMis
-        ),
-         graph_objs.Scattermapbox(
-            lat=dataLatFel,
-            lon=dataLonFel,
-            mode='markers',
+            name='delit',
             marker=dict(
                 size=9,
                 color='rgb(0, 255, 0)',
-                opacity=0.7
+                opacity=1
+            ),
+            text=dataLabMis
+        )
+
+    dataFel = graph_objs.Scattermapbox(
+            lat=dataLatFel,
+            lon=dataLonFel,
+            mode='markers',
+            name='crime',
+            marker=dict(
+                size=9,
+                color='rgb(255, 0, 0)',
+                opacity=1
             ),
             text=dataLabFel
         )
-    ])
+
+    data = [dataMis, dataFel]
+
     layout = graph_objs.Layout(
-        height=600,
+        title='Crime & Delit de L.A. en 2015',
+        height=350,
         autosize=True,
         hovermode='closest',
         mapbox=dict(
@@ -82,7 +88,7 @@ def drawMap(cursor):
             ),
             pitch=0,
             zoom=10,
-            style='light'
+            style='dark'
         ),
     )
 
