@@ -18,3 +18,6 @@ deployChart(db)
 
 from chart2 import deployChart
 deployChart(db)
+
+from chart3 import deployChart
+deployChart(db)
