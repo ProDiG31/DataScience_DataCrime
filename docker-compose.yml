@@ -1,0 +1,29 @@
+version: '2'
+services:
+  app:
+    build: .
+    volumes:
+      - ./source:/source
+      - ./script:/script
+    environment:
+      verbose: 'True'
+      debug: 'False'
+      defaultUser: root
+      defaultHost: db
+      defaultPassword: root
+      databaseName: db_dataCrime
+      databasePort: 3306
+      table_import_temp: t_crime_import
+      ploty_api_key: IZjTtLuyoynFjhtidT8T
+      ploty_username: RomainDucros
+      DEPLOY_TEMP_DATA: ''
+      DEPLOY: ''
+      mapbox_api_key: pk.eyJ1Ijoicm9tYWluZDMxIiwiYSI6ImNqb2Eyd2hneDBhNmMzcHIwYnlqaTBxdm4ifQ.7nydDrYjEwcdKdUxpE0k9A
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_dataCrime
+      MYSQL_USER: myUser
+      MYSQL_PASSWORD: myPassword
