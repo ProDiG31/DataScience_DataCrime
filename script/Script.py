@@ -25,5 +25,8 @@ deployChart(db)
 from chart4 import deployChart
 deployChart(db)
 
+from chartPie import deployChart
+deployChart(db)
+
 from map1 import deployMap
 deployMap(db)

@@ -17,8 +17,8 @@ def drawMap(cursor):
         Inner Join crime_type on crime.crime_code=crime_type.id_crime
         HAVING years = 2015
         ORDER BY years
-        LIMIT 1000; """)
-
+        ; """)
+# LIMIT 1000
     print ("[INFO] - Data Received ")
 
     dataLonFel = []
