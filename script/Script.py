@@ -18,3 +18,6 @@ deployChart(db)
 
 from chart2 import deployChart
 deployChart(db)
+
+from map1 import deployMap
+deployMap(db)
