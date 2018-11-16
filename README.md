@@ -23,6 +23,7 @@
 > pip install scipy
 > pip install numpy
 > pip install python-dotenv
+> pip install astral
 
 
 
