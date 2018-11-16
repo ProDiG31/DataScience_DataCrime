@@ -35,15 +35,17 @@ def drawChart(cursor):
         data_budget_number.append(counter)
 
 
-    trace1 = go.Scatter(
+    crimes = go.Scatter(
         x=crime_x,
         y=data_crime_number,
+        name='Crimes',
         fill='tozeroy'
     )
-    trace2 = go.Scatter(
+    budget = go.Scatter(
         x=budget_x,
         y=data_budget_number,
-        fill='tonexty'
+        name='Budget',
+        fill='tonexty',
         yaxis='y2'
     )
 
@@ -65,7 +67,7 @@ def drawChart(cursor):
         )
     )
 
-    data = [trace1, trace2]
+    data = [crimes, budget]
     fig = go.Figure(data=data, layout=layout)
     py.plot(fig, filename='basic-area', auto_open=True)
 
