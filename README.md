@@ -60,11 +60,11 @@ Rape, Robbery, murder, Assault
 Nombre de delit par ans
 % crime par category
 
-crime by category :
-    Personnal crime
-    Property Crime
-    Inchoate Crime (crime incomplet)
-    Statutory crime
+Heat Map (crime by category) :
+   - Personnal crime
+   - Property Crime
+   - Inchoate Crime (crime incomplet)
+   - Statutory crime
 
 Top 5 crime_code / année
 

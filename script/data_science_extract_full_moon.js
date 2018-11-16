@@ -20,7 +20,7 @@ function add_digit(number) {
 
 var table = document.getElementsByTagName("tbody")[1].children;
 
-var month_hash = { 'jan':'01', 'fév':'02', 'mar':'03', 'avr':'04', 'mai':'05', 'juin':'06', 
+var month_hash = { 'jan':'01', 'fév':'02', 'mar':'03', 'avr':'04', 'mai':'05', 'juin':'06',
                    'juil':'07', 'aoû':'08', 'sep':'09', 'oct':'10', 'nov':'11', 'déc':'12'
                  };
 

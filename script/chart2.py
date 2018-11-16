@@ -12,7 +12,9 @@ def drawChart(cursor):
     print ("[INFO] - Requesting data for Chart2")
 
     cursor.execute("""
-        SELECT YEAR(crime.date_occurred) as years, crime_type.category as category, COUNT(crime.id_crime) as counter FROM `crime` 
+        SELECT YEAR(crime.date_occurred) as years,
+                crime_type.category as category,
+                COUNT(crime.id_crime) as counter FROM `crime`
         Inner Join crime_type on crime.crime_code=crime_type.id_crime
         GROUP BY years, crime_type.category
         ORDER BY years;
