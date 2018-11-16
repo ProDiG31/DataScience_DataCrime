@@ -15,6 +15,7 @@ import plotlySetting
 
 # from chart import deployChart
 # deployChart(db)
+<<<<<<< Updated upstream
 
 # from chart2 import deployChart
 # deployChart(db)
@@ -36,3 +37,14 @@ deployChart(db)
 
 from map1 import deployMap
 deployMap(db)
+=======
+
+# from chart2 import deployChart
+# deployChart(db)
+
+# from map1 import deployMap
+# deployMap(db)
+
+from chartPie import deployChart
+deployChart(db)
+>>>>>>> Stashed changes
