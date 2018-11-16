@@ -47,9 +47,9 @@ def clearTable(cursor):
 	print ("[INFO] - Dropping Previous Tables")
 	cursor.execute("DROP TABLE IF EXISTS %s;" % table_import_temp)
 
-def configDB(cursor): 
+def configDB(cursor):
 	print ("[INFO] - Configuring database sql_mode")
-	cursor.execute("SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';")
+	cursor.execute("SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION';")
 
 def initializeTableImport(cursor):
 	print ("[INFO] - Creating TABLE %s" % table_import_temp)
@@ -86,7 +86,7 @@ def initializeTableImport(cursor):
 	""")
 
 def ImportRowInTempTable(query,row):
-	if (verbose) :print ("[INFO] - Inserting Or Updating Raw into TABLE t_crime_import : "+ row["DR Number"])
+	if (debug) :print ("[INFO] - Inserting Or Updating Raw into TABLE t_crime_import : "+ row["DR Number"])
 	if (debug): print(row)
 
 	victim_age = 0
@@ -340,21 +340,6 @@ def importDescent(cursor,row):
 	query = "INSERT INTO descent_type (id_descent,descent_description) VALUES (\"%s\", \"%s\")" % (id_Desc, desc_Desc)
 	if (debug) : print (query)
 	cursor.execute(query)
-
-# def importWeapon(cursor,row):
-# 	if (verbose) : print ("[INFO] - Importing Weapons : "+ row['weapons_code'])
-# 	if (debug) : print (row)
-
-# 	query = """INSERT INTO weapon_type(id_weapon,weapon_description,category,gravity)
-# 				VALUES (%s, '%s', '%s', '%s')""" % (
-# 							row['weapons_code'],
-# 							row['weapon_description'],
-# 							row['Category'],
-# 							row['gravity']
-# 							)
-
-# 	if (debug) : print (query)
-# 	cursor.execute(query)
 
 def extractWeapon(cursor):
 	if (verbose) : print ("[INFO] - Extracting Weapons from t_crime ")
