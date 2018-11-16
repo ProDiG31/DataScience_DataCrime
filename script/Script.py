@@ -13,38 +13,11 @@ else: print("[INFO] - Deploy skipped")
 
 import plotlySetting
 
-# from chart import deployChart
-# deployChart(db)
-<<<<<<< Updated upstream
-
-# from chart2 import deployChart
-# deployChart(db)
-
-# from map1 import deployMap
-# deployMap(db)
-
-from chartPie import deployChart
+from chart import deployChart
 deployChart(db)
 
-from chart3 import deployChart
-deployChart(db)
-
-from chart4 import deployChart
-deployChart(db)
-
-from chartPie import deployChart
+from chart2 import deployChart
 deployChart(db)
 
 from map1 import deployMap
 deployMap(db)
-=======
-
-# from chart2 import deployChart
-# deployChart(db)
-
-# from map1 import deployMap
-# deployMap(db)
-
-from chartPie import deployChart
-deployChart(db)
->>>>>>> Stashed changes
