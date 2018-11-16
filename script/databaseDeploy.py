@@ -355,27 +355,25 @@ def importDescent(cursor,row):
 def extractWeapon(cursor):
 	if (verbose) : print ("[INFO] - Extracting Weapons from t_crime ")
 	cursor.execute("""
-			  INSERT INTO weapon_type(id_weapon,weapon_description)
-			  SELECT Distinct weapon_used_code, weapon_description
-				  FROM t_crime_import;""")
+			insert ignore  INTO weapon_type(id_weapon,weapon_description)
+			SELECT Distinct weapon_used_code, weapon_description
+			FROM t_crime_import
+			""")
 
 def extractPremise(cursor):
 	if (verbose) : print ("[INFO] - Extracting Premise from t_crime ")
 	cursor.execute("""
-			  INSERT INTO premise_type(id_premise,premise_description)
-			  SELECT Distinct premise_code,premise_description
-				FROM t_crime_import
-				where premise_description != ''
-				group by premise_code
-				order by premise_code;
+			insert ignore INTO premise_type(id_premise,premise_description)
+			SELECT Distinct premise_code, premise_description
+			FROM t_crime_import
 			""")
 
 def extractArea(cursor) :
 	if (verbose) : print ("[INFO] - Extracting Area from t_crime ")
 	cursor.execute("""
-			  INSERT INTO area(id_area,area_name)
-			  SELECT Distinct id_area,area_name
-				  FROM t_crime_import;
+			insert ignore INTO area(id_area,area_name)
+			SELECT Distinct id_area,area_name
+			FROM t_crime_import;
 			""")
 
 def importCrimeType(cursor,row):
@@ -544,8 +542,7 @@ def deployDatabase(database):
 	conn.commit()
 
 	# ---- Ask to import temp data
-	isDeployed = input("[INFO] - Souhaitez vous importer les données temporaire dans la base de donnée (Y/N) :")
-	if(isDeployed == "Y"):
+	if(os.getenv('DEPLOY_TEMP_DATA')):
 
 		# ---- Drop Temp Table
 		clearTable(cursor)
