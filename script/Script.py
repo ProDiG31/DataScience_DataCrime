@@ -30,3 +30,12 @@ deployChart(db)
 
 from map1 import deployMap
 deployMap(db)
+
+from chart_rape import deployChart
+deployChart(db)
+
+from chart_rape_pie import deployChart
+deployChart(db)
+
+from chart_rape_age_bar import deployChart
+deployChart(db)
